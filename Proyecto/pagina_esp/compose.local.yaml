@@ -1,0 +1,28 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    environment:
+      MQTT_USERNAME: ${MQTT_USERNAME:?Set MQTT_USERNAME in backend/.env}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:?Set MQTT_PASSWORD in backend/.env}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        rm -f /tmp/passwordfile
+        mosquitto_passwd -b -c /tmp/passwordfile "$$MQTT_USERNAME" "$$MQTT_PASSWORD"
+        chown mosquitto:mosquitto /tmp/passwordfile
+        cp /mosquitto/config/aclfile /tmp/aclfile
+        chown mosquitto:mosquitto /tmp/aclfile
+        chmod 600 /tmp/aclfile
+        exec mosquitto -c /mosquitto/config/mosquitto.conf
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./deploy/mosquitto.local.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./deploy/mosquitto.local.acl:/mosquitto/config/aclfile:ro
+      - local_mqtt_data:/mosquitto/data
+
+volumes:
+  local_mqtt_data:

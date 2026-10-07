@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080f1c" />
+    <title>Motor · Quest 3</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div><p class="eyebrow">CONTROL DE POSICIÓN · QUEST 3</p><h1>El motor, en tus manos.</h1></div>
+        <span id="estado" class="badge">Sin conectar</span>
+      </header>
+      <form id="acceso">
+        <label for="clave">Clave de acceso al motor</label>
+        <div class="fila"><input id="clave" type="password" autocomplete="off" required placeholder="La misma clave del dashboard" /><button>Conectar</button></div>
+      </form>
+      <div id="sesion" hidden><span id="modo">Consultando backend…</span><button id="desconectar" class="secundario">Desconectar</button></div>
+      <p id="mensaje" role="status" aria-live="polite">Conecta el backend y entra con tu clave para recibir los datos.</p>
+      <section id="vista" aria-label="Escena 3D del control de posición"></section>
+      <div id="vr"><button id="entrar-vr" disabled>Comprobando compatibilidad VR…</button></div>
+      <section class="controles">
+        <div><h2>Mueve la bolita</h2><p>En VR: agárrala con el mando o pellízcala con la mano y deslízala de lado a lado.</p></div>
+        <label for="angulo">Referencia <output id="referencia">0°</output></label>
+        <input id="angulo" type="range" min="-180" max="180" step="1" value="0" disabled />
+        <form id="manual" class="fila"><input id="valor" aria-label="Referencia en grados" type="number" min="-180" max="180" step="1" value="0" disabled /><button id="aplicar" disabled>Aplicar grados</button></form>
+        <div class="fila"><button id="paro" class="peligro" disabled>PARAR MOTOR</button><button id="reset" class="secundario" disabled>Restablecer</button></div>
+        <p class="nota">La bolita envía el ángulo mientras se mueve. Al salir de VR se solicita el paro del motor.</p>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

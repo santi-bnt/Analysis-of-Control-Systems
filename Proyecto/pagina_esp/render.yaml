@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: dc-motor-control-api
+    runtime: docker
+    plan: free
+    dockerfilePath: pagina_esp/backend/Dockerfile
+    dockerContext: pagina_esp/backend
+    healthCheckPath: /health
+    buildFilter:
+      paths:
+        - pagina_esp/backend/**
+        - pagina_esp/render.yaml
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: MQTT_HOST
+        sync: false
+      - key: MQTT_PORT
+        value: "8883"
+      - key: MQTT_USE_TLS
+        value: "true"
+      - key: MQTT_USERNAME
+        sync: false
+      - key: MQTT_PASSWORD
+        sync: false
+      - key: CONTROL_API_TOKEN
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://dc-motor-cloud-santi-2026.web.app

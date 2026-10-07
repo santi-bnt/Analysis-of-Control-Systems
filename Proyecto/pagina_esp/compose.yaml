@@ -1,0 +1,35 @@
+services:
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      CORS_ORIGINS: https://${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+    restart: unless-stopped
+    expose:
+      - "8000"
+
+  web:
+    build: ./web
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      - backend
+      - web
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

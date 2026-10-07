@@ -11,7 +11,7 @@ Deja Docker, el broker y el backend funcionando como indica [el README de la pá
 En otra terminal PowerShell:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\quest3'
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3'
 npm.cmd run dev
 ```
 
@@ -25,7 +25,7 @@ https://192.168.137.119:5173
 
 Introduce la clave actual del backend y pulsa **Conectar**, luego **Entrar en VR**.
 
-Para ver el movimiento de Quest en la página normal, abre también `pagina_esp/web` en la PC con `npm.cmd run dev` y entra a `http://localhost:3000` con la misma clave. Deja ambas pantallas abiertas: al arrastrar la bolita en el Quest, la bolita del control de referencia, las tarjetas y la gráfica de la página siguen la telemetría de la ESP32 en tiempo real.
+Para ver el movimiento de Quest en la página normal, abre también `../pagina_esp/web` en la PC con `npm.cmd run dev` y entra a `http://localhost:3000` con la misma clave. Deja ambas pantallas abiertas: al arrastrar la bolita en el Quest, la bolita del control de referencia, las tarjetas y la gráfica de la página siguen la telemetría de la ESP32 en tiempo real.
 
 ## Agarrar y mover
 

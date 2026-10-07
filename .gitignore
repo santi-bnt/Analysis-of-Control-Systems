@@ -1,14 +1,93 @@
-.pio
+# ==============================================================================
+# Gitignore - Analysis of Control Systems
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Variables de entorno, contraseñas y credenciales sensibles
+# ------------------------------------------------------------------------------
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.sample
+!**/.env.template
+**/Secrets.h
+**/secrets.h
+**/*secrets*.json
+**/*secret*.yaml
+**/*secret*.yml
+
+# ------------------------------------------------------------------------------
+# 2. Certificados TLS / HTTPS y llaves privadas
+# ------------------------------------------------------------------------------
+**/.cert/
+**/*.pem
+**/*.key
+**/*.crt
+**/*.pfx
+**/*.p12
+
+# ------------------------------------------------------------------------------
+# 3. PlatformIO y binarios de microcontroladores (ESP32)
+# ------------------------------------------------------------------------------
+**/.pio/
+**/.pioenvs/
+**/.piolibdeps/
+**/*.elf
+**/*.bin
+**/*.hex
+
+# ------------------------------------------------------------------------------
+# 4. Node.js, Frontend y artefactos de compilación
+# ------------------------------------------------------------------------------
+**/node_modules/
+**/.next/
+**/out/
+**/build/
+**/dist/
+!Proyecto/ESP32/Diagrama_conexiones/dist/
+**/*-debug.log*
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# ------------------------------------------------------------------------------
+# 5. Python (entornos virtuales, bytecode y tests)
+# ------------------------------------------------------------------------------
+**/.venv/
+**/venv/
+**/env/
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/
+
+# ------------------------------------------------------------------------------
+# 6. MATLAB & Simulink (archivos de respaldo y autosave)
+# ------------------------------------------------------------------------------
+*.asv
+*.autosave
+*.mat.lock
+
+# ------------------------------------------------------------------------------
+# 7. Herramientas y metadata de IA
+# ------------------------------------------------------------------------------
+**/.openai/
+
+# ------------------------------------------------------------------------------
+# 8. Archivos del sistema operativo y configuraciones locales de IDE
+# ------------------------------------------------------------------------------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+desktop.ini
+.DS_Store
+.Spotlight-V100
+.Trashes
+
 .vscode/.browse.c_cpp.db*
 **/.vscode/c_cpp_properties.json
 **/.vscode/launch.json
 **/.vscode/ipch
-**/.env
-**/.env.local
-**/node_modules/
-**/.next/
-**/out/
-**/.venv/
-**/__pycache__/
-**/.pytest_cache/
-**/Secrets.h
+.idea/
+*.swp
+*.swo

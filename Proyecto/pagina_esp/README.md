@@ -7,7 +7,7 @@ La página y el firmware son proyectos separados: aquí están el dashboard y la
 Para usar el motor real con MQTT local, primero abre **Docker Desktop** y espera a que esté funcionando. Arranca el broker:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\pagina_esp'
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\pagina_esp'
 docker compose --env-file backend/.env -f compose.local.yaml up -d mqtt
 ```
 
@@ -16,14 +16,14 @@ Después abre dos terminales PowerShell. Las dependencias ya están instaladas e
 **Terminal 1 — backend:**
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\pagina_esp\backend'
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\pagina_esp\backend'
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8002
 ```
 
 **Terminal 2 — página:**
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\pagina_esp\web'
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\pagina_esp\web'
 npm.cmd run dev
 ```
 

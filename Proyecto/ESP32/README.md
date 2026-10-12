@@ -28,7 +28,7 @@ Las señales A/B que entran a la ESP32 deben ser de **3.3 V**; si tu encoder ent
 
 ## Control
 
-El control PID calcula `error = referencia - angulo`, actualiza la integral y derivada con `dt = 10 ms`, y calcula `salida = KP × error + KI × integral + KD × derivada`. Las ganancias iniciales son `KP = 2.2`, `KI = 0.0` y `KD = 0.0` en `include/Config.h`, así que arranca como control proporcional. La salida se limita a -255…255. El BTS7960 usa PWM de 5 kHz y 8 bits. El control corre cada 10 ms y la telemetría se envía cada 100 ms.
+El control P calcula `error = referencia - angulo` y `salida = KP × error`, con `KP = 2.2` en `include/Config.h`. La salida se limita a -255…255. El BTS7960 usa PWM de 5 kHz y 8 bits. El control corre cada 10 ms y la telemetría se envía cada 100 ms.
 
 El encoder cuenta flancos ascendentes de A y determina el sentido leyendo B. Se conservan `PPR = 11` y `REDUCCION = 34`, con un factor de escala acumulado de 4: `CPR = 11 × 34 × 4 = 1496`. Este segundo ajuste duplica el valor anterior de 748, porque se observó que 180° indicados correspondían aproximadamente a 90° físicos. Después de cargar el firmware, comprueba el giro físico para confirmar la escala.
 

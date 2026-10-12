@@ -52,8 +52,6 @@ constexpr unsigned long WIFI_RETRY_MS = 5000;
 constexpr unsigned long MQTT_RETRY_MS = 5000;
 
 constexpr float KP = 2.2f;
-constexpr float KI = 0.0f;
-constexpr float KD = 0.0f;
 constexpr float PPR = 11.0f;
 constexpr float REDUCCION = 34.0f;
 // Se cuenta un flanco RISING de A, igual que en el código del motor.

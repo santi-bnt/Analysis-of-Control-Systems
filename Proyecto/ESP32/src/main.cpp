@@ -50,6 +50,9 @@ void moverMotor(float salida) {
 void tareaControl(void*) {
   TickType_t ultimoDespertar = xTaskGetTickCount();
   const TickType_t periodo = pdMS_TO_TICKS(CONTROL_PERIOD_MS);
+  const float dt = CONTROL_PERIOD_MS / 1000.0f;
+  float integral = 0.0f;
+  float previousError = 0.0f;
   unsigned long tiempoAnterior = millis();
   long conteoAnterior = leerConteo();
 
@@ -61,14 +64,19 @@ void tareaControl(void*) {
     const auto comando = ComunicacionPagina::leerComando();
     const float referencia = comando.referencia;
     const float error = referencia - angulo;
+    integral += error * dt;
+    const float derivative = (error - previousError) / dt;
+    const float output = KP * error + KI * integral + KD * derivative;
     float salida = 0.0f;
 
     if (comando.habilitado) {
-      salida = constrain(KP * error, -255.0f, 255.0f);
+      salida = constrain(output, -255.0f, 255.0f);
       moverMotor(salida);
     } else {
       detenerMotor();
+      integral = 0.0f;
     }
+    previousError = error;
 
     ComunicacionPagina::actualizarTelemetria(referencia, angulo, error, salida);
 

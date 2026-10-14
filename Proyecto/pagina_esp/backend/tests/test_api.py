@@ -77,7 +77,7 @@ def test_get_specific_device():
     telemetry = TelemetryPayload(
         deviceId="motor-01",
         setpoint=100.0,
-        rpm=98.5,
+        position=98.5,
         error=1.5,
         pwm=52.0,
         timestamp=1000
@@ -89,14 +89,14 @@ def test_get_specific_device():
     device = response.json()
     assert device["deviceId"] == "motor-01"
     assert device["status"] == "online"
-    assert device["latestTelemetry"]["rpm"] == 98.5
+    assert device["latestTelemetry"]["position"] == 98.5
 
 
 def test_setpoint_validation_out_of_bounds():
     # Below minimum
     response = client.post(
         "/api/devices/motor-01/setpoint",
-        json={"value": settings.MIN_RPM - 10.0}
+        json={"value": settings.MIN_POSITION_DEG - 10.0}
     )
     assert response.status_code == 400
     assert "out of bounds" in response.json()["detail"]
@@ -104,7 +104,7 @@ def test_setpoint_validation_out_of_bounds():
     # Above maximum
     response = client.post(
         "/api/devices/motor-01/setpoint",
-        json={"value": settings.MAX_RPM + 100.0}
+        json={"value": settings.MAX_POSITION_DEG + 100.0}
     )
     assert response.status_code == 400
     assert "out of bounds" in response.json()["detail"]
@@ -120,7 +120,7 @@ def test_valid_setpoint_submission(mock_publish):
     data = response.json()
     assert data["status"] == "success"
     assert data["deviceId"] == "motor-01"
-    assert data["command"]["type"] == "setpoint"
+    assert data["command"]["type"] == "position"
     assert data["command"]["value"] == 120.0
     mock_publish.assert_called_once()
 

@@ -14,7 +14,6 @@ const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL ||
 const DEFAULT_DEVICE_ID = 'motor-01';
 const MAX_CHART_POINTS = 600;
 const CHART_WINDOW_MS = 60000;
-const IS_DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 export default function Dashboard() {
   const deviceId = DEFAULT_DEVICE_ID;
@@ -221,11 +220,8 @@ export default function Dashboard() {
         method: 'POST',
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (response.ok) {
-        // Optimistically zero out setpoint and pwm
-        setLatestTelemetry((prev) =>
-          prev ? { ...prev, setpoint: 0, pwm: 0 } : null
-        );
+      if (!response.ok) {
+        console.error('Emergency stop request failed:', response.status);
       }
     } catch (err) {
       console.error('Failed to trigger emergency stop:', err);
@@ -268,18 +264,10 @@ export default function Dashboard() {
         deviceId={deviceId}
         isOnline={isOnline}
         wsConnected={wsConnected}
-        isDemoMode={IS_DEMO_MODE}
         onEmergencyStop={handleEmergencyStop}
         onResetSafety={handleResetSafety}
       />
-
-      {IS_DEMO_MODE && (
-        <div className="bg-sky-950 border-b border-sky-800 px-4 py-2 text-center text-xs text-sky-200">
-          MODO DE SIMULACIÓN LOCAL: los controles no están conectados a un motor físico.
-        </div>
-      )}
-
-      {/* Main Dashboard Workspace */}
+{/* Main Dashboard Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 sm:py-8 flex flex-col gap-6">
         
         {/* Device Offline Notice Banner (if offline) */}
@@ -319,7 +307,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="w-full border-t border-slate-900 bg-slate-950/80 px-4 py-4 text-center text-xs text-slate-500">
-        <p>DC Motor Cloud Control System &bull; ESP32 Hardware Closed-Loop PID &bull; MQTT over TLS</p>
+        <p>DC Motor Cloud Control System &bull; ESP32 Hardware Closed-Loop P Control &bull; MQTT over TLS</p>
       </footer>
     </div>
   );

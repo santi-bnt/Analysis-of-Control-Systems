@@ -11,7 +11,6 @@ from .models import DeviceState, SetpointRequest, CommandPayload
 from .state import device_state_manager
 from .websocket_manager import ws_manager
 from .mqtt_client import mqtt_service
-from .simulation import local_motor_simulation
 
 logger = logging.getLogger("api_router")
 def require_token(authorization: str | None = Header(default=None)) -> None:
@@ -69,12 +68,7 @@ async def set_setpoint(device_id: str, request: SetpointRequest):
 
     command = CommandPayload(type="position", value=request.value)
 
-    # 2. Transmit via MQTT
-    if settings.MOCK_MODE:
-        local_motor_simulation.set_setpoint(request.value)
-        success = True
-    else:
-        success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
+    success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
     if not success:
         # Check if MQTT client is currently connected
         if not mqtt_service.is_connected():
@@ -99,11 +93,7 @@ async def trigger_emergency_stop(device_id: str):
     """Publish an emergency stop command to immediately shut down the motor."""
     validate_device_id(device_id)
     command = CommandPayload(type="estop", value=0.0)
-    if settings.MOCK_MODE:
-        local_motor_simulation.set_setpoint(0.0)
-        success = True
-    else:
-        success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
+    success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -121,10 +111,7 @@ async def refresh_command_timeout(device_id: str):
     """Keep a valid position command alive without changing its target."""
     validate_device_id(device_id)
     command = CommandPayload(type="heartbeat", value=0.0)
-    if settings.MOCK_MODE:
-        success = True
-    else:
-        success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
+    success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
     if not success:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="MQTT broker connection is currently unavailable.")
@@ -136,10 +123,7 @@ async def reset_safety_latch(device_id: str):
     """Clear a latched stop/fault after the operator has checked the mechanism."""
     validate_device_id(device_id)
     command = CommandPayload(type="reset", value=0.0)
-    if settings.MOCK_MODE:
-        success = True
-    else:
-        success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
+    success = await run_in_threadpool(mqtt_service.publish_command, device_id, command)
     if not success:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="MQTT broker connection is currently unavailable.")

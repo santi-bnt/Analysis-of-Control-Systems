@@ -7,7 +7,6 @@ interface DeviceHeaderProps {
   deviceId: string;
   isOnline: boolean;
   wsConnected: boolean;
-  isDemoMode: boolean;
   onEmergencyStop: () => void;
   onResetSafety: () => void;
   isEstopActive?: boolean;
@@ -17,7 +16,6 @@ export const DeviceHeader: React.FC<DeviceHeaderProps> = ({
   deviceId,
   isOnline,
   wsConnected,
-  isDemoMode,
   onEmergencyStop,
   onResetSafety,
   isEstopActive = false,
@@ -41,7 +39,7 @@ export const DeviceHeader: React.FC<DeviceHeaderProps> = ({
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400">
-              {isDemoMode ? 'Local Motor Simulation' : 'Local Analog PID Model Control'}
+              ESP32 P Position Control
             </p>
           </div>
         </div>
@@ -52,7 +50,7 @@ export const DeviceHeader: React.FC<DeviceHeaderProps> = ({
           {/* Cloud WebSocket status */}
           <div className="flex items-center space-x-1.5 text-xs text-slate-400 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700/60">
             <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-cyan-400 animate-pulse' : 'bg-rose-500'}`} />
-            <span>{isDemoMode ? 'Local demo' : wsConnected ? 'Local Bridge' : 'Reconnecting...'}</span>
+            <span>{wsConnected ? 'Local Bridge' : 'Reconnecting...'}</span>
           </div>
 
           {/* Hardware ESP32 Online / Offline Status Badge */}
@@ -68,13 +66,13 @@ export const DeviceHeader: React.FC<DeviceHeaderProps> = ({
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
                 <Wifi className="w-3.5 h-3.5" />
-                <span>{isDemoMode ? 'SIMULATION' : 'ONLINE'}</span>
+                <span>ONLINE</span>
               </>
             ) : (
               <>
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
                 <WifiOff className="w-3.5 h-3.5" />
-                <span>{isDemoMode ? 'DEMO OFFLINE' : 'OFFLINE'}</span>
+                <span>OFFLINE</span>
               </>
             )}
           </div>

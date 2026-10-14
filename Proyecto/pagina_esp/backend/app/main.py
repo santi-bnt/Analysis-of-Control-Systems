@@ -8,7 +8,6 @@ from .config import settings
 from .api import api_router, ws_router
 from .websocket_manager import ws_manager
 from .mqtt_client import mqtt_service
-from .simulation import local_motor_simulation
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,25 +22,13 @@ async def lifespan(app: FastAPI):
     loop = asyncio.get_running_loop()
     ws_manager.set_event_loop(loop)
 
-    simulation_task = None
-    if settings.MOCK_MODE:
-        logger.info("Starting local motor simulation (no MQTT or hardware).")
-        simulation_task = asyncio.create_task(local_motor_simulation.run())
-    else:
-        logger.info("Starting MQTT Service...")
-        mqtt_service.start()
+    logger.info("Starting MQTT Service...")
+    mqtt_service.start()
 
     yield
 
-    if simulation_task:
-        simulation_task.cancel()
-        try:
-            await simulation_task
-        except asyncio.CancelledError:
-            pass
-    else:
-        logger.info("Shutting down MQTT Service...")
-        mqtt_service.stop()
+    logger.info("Shutting down MQTT Service...")
+    mqtt_service.stop()
 
 
 app = FastAPI(
@@ -69,8 +56,8 @@ app.include_router(ws_router)
 async def health_check():
     return {
         "status": "healthy",
-        "mode": "simulation" if settings.MOCK_MODE else "mqtt",
-        "mqtt_connected": mqtt_service.is_connected() if not settings.MOCK_MODE else False,
+        "mode": "mqtt",
+        "mqtt_connected": mqtt_service.is_connected(),
         "mqtt_host": settings.MQTT_HOST,
         "mqtt_port": settings.MQTT_PORT
     }

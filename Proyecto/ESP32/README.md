@@ -2,7 +2,8 @@
 
 Este proyecto usa una sola ESP32, un motor con encoder y el driver BTS7960. Abre esta carpeta como proyecto PlatformIO.
 
-- `src/main.cpp`: encoder, control P y salida al BTS7960.
+- `src/main.cpp`: inicia el control y la comunicación.
+- `src/ControlPosicion.cpp`: encoder, control P y salida al BTS7960.
 - `src/ComunicacionPagina.h/.cpp`: Wi-Fi, MQTT, comandos y telemetría.
 - `include/Config.h`: pines, ganancia, resolución del encoder y periodos.
 - `include/Secrets.h`: credenciales privadas y certificado TLS; se excluye de Git.
@@ -34,7 +35,7 @@ El encoder cuenta flancos ascendentes de A y determina el sentido leyendo B. Se 
 
 La posición del eje al encender define los 0°. La página manda un ángulo relativo a ese punto. El encoder incremental no conserva una posición absoluta al reiniciar.
 
-Se invirtió el sentido de los ángulos: -90° gira hacia donde antes giraba +90°, y viceversa. Para mantener la corrección del control, se invirtieron juntos el conteo del encoder y el sentido del driver. Una salida positiva usa LPWM y una negativa usa RPWM. La escala permanece en 1496 pulsos por vuelta.
+Se invirtió el sentido de los ángulos: +90° gira hacia donde antes giraba -90°, y viceversa. Para mantener la corrección del control, se invirtieron juntos el conteo del encoder y el sentido del driver. Una salida positiva usa RPWM y una negativa usa LPWM; el encoder suma cuando B está en HIGH. La escala permanece en 1496 pulsos por vuelta. Este cambio requiere volver a subir el firmware; editar el archivo no modifica la ESP32 conectada.
 
 El motor espera una referencia válida de la página. No alterna referencias ni ejecuta una prueba temporizada. Al recibir paro, perder MQTT o vencer el comando, se apagan los PWM y los enable del driver. Después de un reset espera otro ángulo; el reset no borra el conteo del encoder.
 

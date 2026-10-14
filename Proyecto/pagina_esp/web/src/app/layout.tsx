@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'DC Motor Cloud Control Dashboard',
-  description: 'Encoder position controller for ESP32 with a local PID loop',
+  description: 'Encoder position controller for ESP32 with a local P control loop',
 };
 
 export default function RootLayout({

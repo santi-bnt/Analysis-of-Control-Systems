@@ -14,8 +14,6 @@ class Settings(BaseSettings):
     MQTT_USE_TLS: bool = Field(default=True, description="Enable TLS for MQTT")
     MQTT_KEEPALIVE: int = Field(default=60, description="MQTT Keep-alive interval in seconds")
     CONTROL_API_TOKEN: str = Field(default="", description="Private dashboard access token")
-    MOCK_MODE: bool = Field(default=False, description="Run a local motor simulation instead of MQTT")
-
     MIN_POSITION_DEG: float = Field(default=-180.0, description="Minimum position command in degrees")
     MAX_POSITION_DEG: float = Field(default=180.0, description="Maximum position command in degrees")
 

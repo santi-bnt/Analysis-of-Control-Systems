@@ -2,7 +2,7 @@
 
 Este proyecto usa una sola ESP32, un motor con encoder y el driver BTS7960. Abre esta carpeta como proyecto PlatformIO.
 
-- `src/main.cpp`: encoder, control P y salida al BTS7960.
+- `src/main.cpp`: encoder, control PID y salida al BTS7960.
 - `src/ComunicacionPagina.h/.cpp`: Wi-Fi, MQTT, comandos y telemetría.
 - `include/Config.h`: pines, ganancia, resolución del encoder y periodos.
 - `include/Secrets.h`: credenciales privadas y certificado TLS; se excluye de Git.
@@ -53,7 +53,7 @@ Compila con **PlatformIO: Build** y carga con **PlatformIO: Upload**. El monitor
 Conecta la ESP32 por USB y ejecuta:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\ESP32'
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto_PID\ESP32'
 & 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' run --target upload
 ```
 
@@ -64,7 +64,7 @@ Este comando compila y sube el firmware.
 Cuando termine la carga, ejecuta en esa terminal o en otra:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\ESP32'
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto_PID\ESP32'
 & 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' device monitor --baud 115200
 ```
 

@@ -3,4 +3,3 @@
 .pytest_cache
 __pycache__
 tests
-mock_device.py

@@ -58,7 +58,7 @@ export const SetpointController: React.FC<SetpointControllerProps> = ({
     try {
       const success = await onApplySetpoint(target);
       if (success) {
-        setFeedbackMsg({ text: `Target position applied: ${target}°`, error: false });
+        setFeedbackMsg({ text: `Referencia enviada: ${target}°. Target muestra la confirmación de la ESP32.`, error: false });
         setTimeout(() => setFeedbackMsg(null), 3000);
       } else {
         setFeedbackMsg({ text: 'Failed to apply setpoint. Check broker connection.', error: true });

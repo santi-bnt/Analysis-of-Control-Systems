@@ -1,0 +1,19 @@
+X [ERROR] Cannot read directory "../../../../..": Access is denied.
+
+X [ERROR] Could not resolve "C:\\Users\\santi\\OneDrive\\Documents\\Analysis-of-Control-Systems\\Proyecto\\quest3\\vite.config.ts"
+
+failed to load config from C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\vite.config.ts
+error when starting dev server:
+Error: Build failed with 2 errors:
+error: Cannot read directory "../../../../..": Access is denied.
+error: Could not resolve "C:\\Users\\santi\\OneDrive\\Documents\\Analysis-of-Control-Systems\\Proyecto\\quest3\\vite.config.ts"
+    at failureErrorWithLog (C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:1752:15)
+    at C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:1211:25
+    at runOnEndCallbacks (C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:1592:45)
+    at buildResponseToResult (C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:1209:7)
+    at C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:1236:16
+    at responseCallbacks.<computed> (C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:886:9)
+    at handleIncomingPacket (C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:941:12)
+    at Socket.readFromStdout (C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\quest3\node_modules\esbuild\lib\main.js:864:7)
+    at Socket.emit (node:events:509:28)
+    at addChunk (node:internal/streams/readable:563:12)

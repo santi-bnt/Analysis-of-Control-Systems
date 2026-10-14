@@ -53,11 +53,11 @@ export const TelemetryCards: React.FC<TelemetryCardsProps> = ({ telemetry }) => 
             </span>
             <span className="text-xs sm:text-sm font-medium text-slate-400 uppercase">DEG</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Analog model input (GPIO 34)</p>
+          <p className="text-[11px] text-slate-500 mt-1">Encoder position (GPIO 32/33)</p>
         </div>
       </div>
 
-      {/* 3. PID Error Card */}
+      {/* 3. Position Error Card */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden shadow-lg shadow-black/20">
         <div className="flex items-center justify-between text-slate-400 mb-2">
           <span className="text-xs font-semibold uppercase tracking-wider">Error</span>

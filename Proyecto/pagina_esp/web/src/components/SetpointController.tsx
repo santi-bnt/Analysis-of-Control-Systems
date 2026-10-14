@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Minus, Plus, Send, RotateCcw, Sliders } from 'lucide-react';
+import { Minus, Plus, Send, Sliders } from 'lucide-react';
 
 interface SetpointControllerProps {
   currentSetpoint: number;

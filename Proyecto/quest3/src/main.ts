@@ -37,7 +37,7 @@ motor.observar(datos => {
   estado.textContent = datos.online && datos.conectado ? 'ONLINE' : 'OFFLINE';
   estado.classList.toggle('online', datos.online && datos.conectado);
   mensaje.textContent = datos.mensaje;
-  modo.textContent = datos.modo === 'simulation' ? 'SIMULACIÓN · no se mueve un motor físico' : `MOTOR REAL · ${motor.dispositivo}`;
+  modo.textContent = `MOTOR REAL · ${motor.dispositivo}`;
   const disponible = motor.puedeMover();
   slider.disabled = !disponible;
   numero.disabled = !disponible;

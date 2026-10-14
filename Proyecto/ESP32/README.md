@@ -7,7 +7,6 @@ Este proyecto usa una sola ESP32, un motor con encoder y el driver BTS7960. Abre
 - `src/ComunicacionPagina.h/.cpp`: Wi-Fi, MQTT, comandos y telemetría.
 - `include/Config.h`: pines, ganancia, resolución del encoder y periodos.
 - `include/Secrets.h`: credenciales privadas y certificado TLS; se excluye de Git.
-- `Diagrama_conexiones/dist/index.html`: diagrama visual interactivo de conexiones.
 
 ## Conexiones
 

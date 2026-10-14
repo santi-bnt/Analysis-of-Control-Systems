@@ -20,7 +20,6 @@ export default function Dashboard() {
   const [accessToken, setAccessToken] = useState('');
   const [tokenInput, setTokenInput] = useState('');
   const [accessError, setAccessError] = useState('');
-  const [deviceState, setDeviceState] = useState<DeviceState | null>(null);
   const [latestTelemetry, setLatestTelemetry] = useState<TelemetryData | null>(null);
   const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [isOnline, setIsOnline] = useState<boolean>(false);
@@ -50,7 +49,6 @@ export default function Dashboard() {
       }
       if (res.ok) {
         const data: DeviceState = await res.json();
-        setDeviceState(data);
         setIsOnline(data.status === 'online');
         if (data.latestTelemetry) {
           setLatestTelemetry(data.latestTelemetry);
@@ -89,7 +87,6 @@ export default function Dashboard() {
 
         // Handle Initial state snapshot
         if (msg.type === 'init' && msg.device) {
-          setDeviceState(msg.device);
           setIsOnline(msg.device.status === 'online');
           if (msg.device.latestTelemetry) {
             setLatestTelemetry(msg.device.latestTelemetry);
@@ -300,7 +297,7 @@ export default function Dashboard() {
 
         {/* 3. Real-Time Telemetry Chart */}
         <section aria-label="Real-Time Chart" className="flex-1">
-          <RealTimeChart dataPoints={chartData} maxPoints={MAX_CHART_POINTS} />
+          <RealTimeChart dataPoints={chartData} />
         </section>
 
       </main>

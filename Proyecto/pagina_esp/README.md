@@ -11,7 +11,7 @@ Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control
 docker compose --env-file backend/.env -f compose.local.yaml up -d mqtt
 ```
 
-Después abre dos terminales PowerShell. Las dependencias ya están instaladas en este equipo. En simulación, el broker no es necesario.
+Después abre dos terminales PowerShell. Las dependencias ya están instaladas en este equipo. Mantén Docker y el broker MQTT activos durante el uso del motor.
 
 **Terminal 1 — backend:**
 
@@ -31,7 +31,7 @@ Deja ambas terminales abiertas y entra a [http://localhost:3000](http://localhos
 
 Para apagar los servicios, pulsa **Ctrl+C** en cada terminal. Si el puerto ya está ocupado, detén la instancia anterior antes de volver a arrancar.
 
-El modo simulado fue eliminado: las referencias y acciones de seguridad del dashboard se envían al backend y se publican por MQTT. Para mover el motor, el broker debe estar activo y la ESP32 debe aparecer ONLINE.
+Las referencias y acciones de seguridad del dashboard se envían al backend y se publican por MQTT. Para mover el motor, el broker debe estar activo y la ESP32 debe aparecer ONLINE.
 
 El frontend debe apuntar al mismo puerto del backend. La configuración actual de `web/.env.local` es:
 
@@ -42,7 +42,7 @@ NEXT_PUBLIC_WS_URL=ws://localhost:8002
 
 ## Conectar la ESP32
 
-El dashboard envía el ángulo al backend mediante la API REST. El backend publica el valor elegido en `motor/motor-01/command`, con tipo `position`. En `ESP32/src/ComunicacionPagina.cpp`, el callback MQTT guarda la referencia. El `main.cpp` la obtiene con `ComunicacionPagina::leerComando()` y ejecuta el control de posición cada 10 ms. La tarea de comunicación publica posición, error y salida en `motor/motor-01/telemetry`.
+El dashboard envía el ángulo al backend mediante la API REST. El backend publica el valor elegido en `motor/motor-01/command`, con tipo `position`. En `../ESP32/src/ComunicacionPagina.cpp`, el callback MQTT guarda la referencia. `ControlPosicion.cpp` la obtiene con `ComunicacionPagina::leerComando()` y ejecuta el control P cada 10 ms. La tarea de comunicación publica posición, error y salida en `motor/motor-01/telemetry`.
 
 El dashboard normal y Quest usan este mismo flujo. Abre ambos clientes con la misma clave: al mover la bolita en Quest, la página normal actualiza su control de referencia, las tarjetas y la gráfica con la telemetría de la ESP32.
 

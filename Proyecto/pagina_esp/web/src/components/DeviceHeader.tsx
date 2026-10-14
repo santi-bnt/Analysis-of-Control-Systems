@@ -9,7 +9,6 @@ interface DeviceHeaderProps {
   wsConnected: boolean;
   onEmergencyStop: () => void;
   onResetSafety: () => void;
-  isEstopActive?: boolean;
 }
 
 export const DeviceHeader: React.FC<DeviceHeaderProps> = ({
@@ -18,7 +17,6 @@ export const DeviceHeader: React.FC<DeviceHeaderProps> = ({
   wsConnected,
   onEmergencyStop,
   onResetSafety,
-  isEstopActive = false,
 }) => {
   return (
     <header className="w-full bg-slate-900 border-b border-slate-800 px-4 py-4 sm:px-6 sm:py-5 text-white">

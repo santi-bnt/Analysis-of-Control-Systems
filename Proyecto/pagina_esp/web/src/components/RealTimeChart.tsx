@@ -30,10 +30,9 @@ ChartJS.register(
 
 interface RealTimeChartProps {
   dataPoints: ChartPoint[];
-  maxPoints?: number;
 }
 
-export const RealTimeChart: React.FC<RealTimeChartProps> = ({ dataPoints, maxPoints = 300 }) => {
+export const RealTimeChart: React.FC<RealTimeChartProps> = ({ dataPoints }) => {
   // Extract chart arrays
   const { labels, setpoints, positions } = useMemo(() => {
     // Only display every 2nd or 3rd label if dense to keep X-axis readable

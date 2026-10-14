@@ -85,7 +85,7 @@ export const TelemetryCards: React.FC<TelemetryCardsProps> = ({ telemetry }) => 
       {/* 4. PWM / Control Output Card */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden shadow-lg shadow-black/20">
         <div className="flex items-center justify-between text-slate-400 mb-2">
-          <span className="text-xs font-semibold uppercase tracking-wider">DAC Output</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">PWM / control</span>
           <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
             <Zap className="w-4 h-4" />
           </div>

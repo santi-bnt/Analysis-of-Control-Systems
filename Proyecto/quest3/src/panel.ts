@@ -29,7 +29,7 @@ export class Panel {
     c.fillStyle = estado.online && estado.conectado ? '#70e3d2' : '#ffa7b9';
     c.fillText(estado.online && estado.conectado ? 'ONLINE' : 'OFFLINE', 60, 124);
     c.fillStyle = '#9aabc4';
-    c.fillText(estado.modo === 'simulation' ? 'SIMULACIÓN' : 'MOTOR REAL', 280, 124);
+    c.fillText('MOTOR REAL', 280, 124);
     c.fillText(estado.conectado ? 'Datos en vivo' : 'WebSocket desconectado', 1000, 124);
     const t = estado.telemetria;
     const tarjetas = [

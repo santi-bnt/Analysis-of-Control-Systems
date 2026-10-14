@@ -6,7 +6,7 @@ type Avisar = (estado: EstadoMotor) => void;
 export class Motor {
   readonly estado: EstadoMotor = {
     online: false, conectado: false, detenido: false,
-    telemetria: null, historial: [], modo: null, mensaje: 'Sin conectar.',
+    telemetria: null, historial: [], mensaje: 'Sin conectar.',
   };
   private clave = '';
   private socket: WebSocket | null = null;
@@ -51,13 +51,8 @@ export class Motor {
   async conectar(clave: string): Promise<void> {
     this.cerrarConexion();
     this.clave = clave;
-    const [respuesta, salud] = await Promise.all([
-      this.peticion(this.ruta()),
-      this.peticion('/health'),
-    ]);
+    const respuesta = await this.peticion(this.ruta());
     const dispositivo = await respuesta.json() as Dispositivo;
-    const health = await salud.json();
-    this.estado.modo = health.mode === 'simulation' ? 'simulation' : 'mqtt';
     this.aplicarDispositivo(dispositivo);
     this.abrirSocket();
     let ultimoHeartbeat = 0;

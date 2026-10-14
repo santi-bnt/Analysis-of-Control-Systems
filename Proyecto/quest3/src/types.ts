@@ -23,6 +23,5 @@ export interface EstadoMotor {
   detenido: boolean;
   telemetria: Telemetria | null;
   historial: Muestra[];
-  modo: 'mqtt' | 'simulation' | null;
   mensaje: string;
 }

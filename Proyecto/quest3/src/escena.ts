@@ -1,5 +1,5 @@
 import {
-  AmbientLight, BoxGeometry, CanvasTexture, Color, DirectionalLight, Group, Mesh,
+  AmbientLight, BoxGeometry, CanvasTexture, DirectionalLight, Group, Mesh,
   MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, PlaneGeometry,
   Scene, SphereGeometry, SRGBColorSpace, Vector3, WebGLRenderer,
 } from 'three';

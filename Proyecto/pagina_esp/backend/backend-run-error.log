@@ -1848,3 +1848,6 @@ INFO:     connection open
 2026-10-13 20:46:28,448 [INFO] [mqtt_client] Published command to 'motor/motor-01/command': {"type": "heartbeat", "value": 0.0}
 2026-10-13 20:46:30,324 [INFO] [mqtt_client] Published command to 'motor/motor-01/command': {"type": "heartbeat", "value": 0.0}
 2026-10-13 20:46:32,333 [INFO] [mqtt_client] Published command to 'motor/motor-01/command': {"type": "heartbeat", "value": 0.0}
+2026-10-13 20:46:34,329 [INFO] [mqtt_client] Published command to 'motor/motor-01/command': {"type": "heartbeat", "value": 0.0}
+2026-10-13 20:46:36,326 [INFO] [mqtt_client] Published command to 'motor/motor-01/command': {"type": "heartbeat", "value": 0.0}
+2026-10-13 20:46:38,345 [INFO] [mqtt_client] Published command to 'motor/motor-01/command': {"type": "heartbeat", "value": 0.0}

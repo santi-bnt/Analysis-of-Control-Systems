@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101826">
+  <title>ESP32 · Motor wiring diagram</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #101826;
+      --panel: #182536;
+      --line: #344b63;
+      --text: #eff6ff;
+      --muted: #b2c1d2;
+      --cyan: #55d9d0;
+      --blue: #86aaff;
+      --orange: #ffbd73;
+      --red: #ff8585;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(ellipse at top, #1a2c40, var(--page) 64%); color: var(--text); }
+    main { width: min(1180px, 100% - 36px); margin: 0 auto; padding: 42px 0 56px; }
+    .eyebrow { color: var(--cyan); font-size: .77rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 8px 0; font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -.035em; }
+    .subtitle { max-width: 780px; color: var(--muted); line-height: 1.65; }
+    .signal-flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 26px 0; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: #111d2b; font-weight: 750; }
+    .signal-flow span:nth-child(even) { color: var(--cyan); font-size: 1.25rem; }
+    .block-diagram { margin: 26px 0; padding: 22px; overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; background: #111d2b; }
+    .block-flow { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 1090px; }
+    .system-block { display: grid; place-content: center; gap: 8px; width: 142px; min-height: 85px; padding: 12px; text-align: center; border: 1px solid #55d9d0; border-radius: 12px; background: #1d3044; font-weight: 750; }
+    .system-block.controller { border-color: #86aaff; } .system-block.plant { border-color: #ffbd73; }
+    .system-block small { color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .block-arrow { color: var(--cyan); font-size: 1.5rem; font-weight: 800; }
+    .loop-lines { display: grid; gap: 8px; margin: 16px 14px 0; color: var(--muted); font-size: .84rem; }
+    .loop-lines div { padding: 9px 12px; border-left: 3px solid var(--blue); background: #182536; }
+    .loop-lines div:last-child { border-left-color: #b2c1d2; border-left-style: dashed; }
+    .loop-lines strong { color: var(--text); }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr); gap: 18px; align-items: stretch; }
+    .card { border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(160deg, #1d3044, var(--panel) 70%); padding: 22px; box-shadow: 0 18px 45px #0003; }
+    .card h2 { margin: 0 0 6px; font-size: 1.2rem; }
+    .caption { margin: 0 0 18px; color: var(--muted); font-size: .91rem; line-height: 1.5; }
+    .chip { display: inline-block; margin: 0 0 14px; padding: 5px 9px; border: 1px solid #42617b; border-radius: 999px; color: #d8e8f7; font-size: .74rem; font-weight: 750; }
+    .pins { display: grid; gap: 8px; }
+    .pin { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 8px 10px; background: #111d2b; border: 1px solid #2b4157; border-radius: 9px; font-size: .88rem; }
+    .pin code { color: var(--cyan); font: 750 .82rem ui-monospace, Consolas, monospace; white-space: nowrap; }
+    .pin.encoder code { color: var(--blue); }
+    .pin.power code { color: var(--orange); }
+    .arrow { display: grid; place-items: center; color: var(--cyan); font-size: 2.2rem; font-weight: 800; }
+    .wire-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: .92rem; }
+    .wire-table th, .wire-table td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+    .wire-table th { color: var(--muted); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
+    .wire-table td:last-child { color: #d9e8f7; }
+    .wire-table code { color: var(--cyan); font: 750 .83rem ui-monospace, Consolas, monospace; }
+    .notes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+    .note { padding: 15px 17px; border-radius: 12px; background: #111d2b; border: 1px solid #2b4157; color: var(--muted); font-size: .88rem; line-height: 1.6; }
+    .note strong { color: var(--text); }
+    .power-note { border-color: #795437; }
+    footer { margin-top: 24px; color: #8fa2b7; font-size: .8rem; }
+    @media (max-width: 780px) {
+      main { width: min(100% - 24px, 580px); padding-top: 26px; }
+      .layout { grid-template-columns: 1fr; gap: 10px; }
+      .arrow { transform: rotate(90deg); padding: 0; height: 27px; }
+      .notes { grid-template-columns: 1fr; }
+      .wire-table th, .wire-table td { padding: 9px 7px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Position control · single ESP32</p>
+    <h1>Motor and encoder wiring</h1>
+    <p class="subtitle">Connection diagram for the 25GA310-100, 12 V, 70 rpm geared DC motor, its encoder, and the BTS7960 driver. The ESP32 uses a local P position controller.</p>
+
+    <section class="block-diagram" aria-label="System block diagram">
+      <p class="eyebrow">System block diagram</p>
+      <div class="block-flow">
+        <div class="system-block">Headset<small>Quest 3 · target angle</small></div><span class="block-arrow">→</span>
+        <div class="system-block">WiFi<small>Local network</small></div><span class="block-arrow">→</span>
+        <div class="system-block controller">ESP32<small>P / PI / PID · 10 ms</small></div><span class="block-arrow">→</span>
+        <div class="system-block plant">BTS7960<small>PWM · 5 kHz</small></div><span class="block-arrow">→</span>
+        <div class="system-block plant">DC motor<small>25GA310-100 · 12 V · 70 rpm</small></div><span class="block-arrow">→</span>
+        <div class="system-block controller">Encoder<small>Channels A and B</small></div>
+      </div>
+      <div class="loop-lines">
+        <div><strong>Feedback loop:</strong> Encoder → ESP32. The ESP32 uses the measured position to update motor control.</div>
+      </div>
+    </section>
+
+    <section class="layout" aria-label="Connection overview">
+      <article class="card">
+        <span class="chip">CONTROL · 10 ms</span>
+        <h2>ESP32 Dev Module</h2>
+        <p class="caption">Reads encoder channels and sends direction and PWM to the driver.</p>
+        <div class="pins">
+          <div class="pin encoder"><span>Encoder channel A</span><code>GPIO 32</code></div>
+          <div class="pin encoder"><span>Encoder channel B</span><code>GPIO 33</code></div>
+          <div class="pin"><span>Right PWM signal</span><code>GPIO 25</code></div>
+          <div class="pin"><span>Left PWM signal</span><code>GPIO 26</code></div>
+          <div class="pin"><span>Right driver enable</span><code>GPIO 27</code></div>
+          <div class="pin"><span>Left driver enable</span><code>GPIO 14</code></div>
+          <div class="pin power"><span>Shared signal ground</span><code>GND</code></div>
+        </div>
+      </article>
+
+      <div class="arrow" aria-hidden="true">→</div>
+
+      <article class="card">
+        <span class="chip">H-BRIDGE · 5 kHz PWM</span>
+        <h2>BTS7960 driver</h2>
+        <p class="caption">Takes the ESP32 direction and PWM signals and switches motor power.</p>
+        <div class="pins">
+          <div class="pin"><span>RPWM ← ESP32 GPIO 25</span><code>RPWM</code></div>
+          <div class="pin"><span>LPWM ← ESP32 GPIO 26</span><code>LPWM</code></div>
+          <div class="pin"><span>R_EN ← ESP32 GPIO 27</span><code>R_EN</code></div>
+          <div class="pin"><span>L_EN ← ESP32 GPIO 14</span><code>L_EN</code></div>
+          <div class="pin power"><span>Motor supply</span><code>12 V</code></div>
+          <div class="pin power"><span>Ground shared with ESP32</span><code>GND</code></div>
+          <div class="pin"><span>Motor output terminals</span><code>M+ / M−</code></div>
+        </div>
+      </article>
+
+      <div class="arrow" aria-hidden="true">→</div>
+
+      <article class="card">
+        <span class="chip">GEARED DC MOTOR</span>
+        <h2>25GA310-100</h2>
+        <p class="caption">Nameplate: 12 V DC, 70 rpm. Encoder feedback closes the position loop.</p>
+        <div class="pins">
+          <div class="pin power"><span>Motor lead 1</span><code>BTS M+</code></div>
+          <div class="pin power"><span>Motor lead 2</span><code>BTS M−</code></div>
+          <div class="pin encoder"><span>Encoder A</span><code>GPIO 32</code></div>
+          <div class="pin encoder"><span>Encoder B</span><code>GPIO 33</code></div>
+          <div class="pin power"><span>Encoder supply / ground</span><code>per encoder board</code></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:18px" aria-label="Wiring table">
+      <h2>Wire-by-wire connections</h2>
+      <table class="wire-table">
+        <thead><tr><th>From</th><th>To</th></tr></thead>
+        <tbody>
+          <tr><td>ESP32 GPIO 25</td><td>BTS7960 RPWM</td></tr>
+          <tr><td>ESP32 GPIO 26</td><td>BTS7960 LPWM</td></tr>
+          <tr><td>ESP32 GPIO 27</td><td>BTS7960 R_EN</td></tr>
+          <tr><td>ESP32 GPIO 14</td><td>BTS7960 L_EN</td></tr>
+          <tr><td>Encoder channel A</td><td>ESP32 GPIO 32</td></tr>
+          <tr><td>Encoder channel B</td><td>ESP32 GPIO 33</td></tr>
+          <tr><td>12 V supply positive</td><td>BTS7960 motor supply positive</td></tr>
+          <tr><td>12 V supply negative</td><td>BTS7960 power GND</td></tr>
+          <tr><td>BTS7960 motor outputs M+ / M−</td><td>Motor leads</td></tr>
+          <tr><td>ESP32 GND</td><td>BTS7960 GND and encoder signal GND</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="notes">
+      <aside class="note"><strong>Encoder signals:</strong> connect A and B to the GPIO inputs only if their output levels are safe for the ESP32. ESP32 GPIO inputs are 3.3 V logic.</aside>
+      <aside class="note power-note"><strong>Power:</strong> use the motor's 12 V supply through the BTS7960. Do not power the motor from the ESP32. Check the markings on your driver board for its logic supply and terminal names.</aside>
+    </div>
+    <footer>Pin assignments match Proyecto/ESP32/include/Config.h. Encoder scale in firmware: CPR = 1496 counts/revolution.</footer>
+  </main>
+</body>
+</html>

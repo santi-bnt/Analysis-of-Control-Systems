@@ -29,7 +29,7 @@ npm.cmd run dev
 
 Deja ambas terminales abiertas y entra a [http://localhost:3000](http://localhost:3000). Usa la clave configurada como `CONTROL_API_TOKEN` en `backend/.env`. La documentación de la API está en [http://localhost:8002/docs](http://localhost:8002/docs).
 
-Para apagar los servicios, pulsa **Ctrl+C** en cada terminal. Si el puerto ya está ocupado, detén la instancia anterior antes de volver a arrancar.
+Para apagar los servicios, pulsa **Ctrl+C** en cada terminal. Si `npm.cmd run dev` muestra `EADDRINUSE` en el puerto 3000, la página ya está abierta o hay otra instancia en ese puerto: primero prueba [http://localhost:3000](http://localhost:3000) y no inicies una segunda copia.
 
 Las referencias y acciones de seguridad del dashboard se envían al backend y se publican por MQTT. Para mover el motor, el broker debe estar activo y la ESP32 debe aparecer ONLINE.
 
@@ -47,9 +47,9 @@ El dashboard envía el ángulo al backend mediante la API REST. El backend publi
 El dashboard normal y Quest usan este mismo flujo. Abre ambos clientes con la misma clave: al mover la bolita en Quest, la página normal actualiza su control de referencia, las tarjetas y la gráfica con la telemetría de la ESP32.
 
 1. En `../ESP32/include/Secrets.h`, configura Wi-Fi, broker, usuario MQTT, contraseña y certificado raíz TLS. Ese archivo se ignora en Git.
-2. En `pagina_esp/backend/.env`, el mismo broker y las credenciales MQTT del backend. Conserva la clave de acceso y los límites `MIN_POSITION_DEG=-180` y `MAX_POSITION_DEG=180`.
-3. En `pagina_esp/web/.env.local`, las direcciones locales REST/WebSocket que ya aparecen en ese archivo.
-4. Reinicia backend y frontend. Abre `ESP32/` en PlatformIO, compila y sube el programa.
+2. En `backend/.env`, configura el mismo broker y las credenciales MQTT del backend. Conserva la clave de acceso y los límites `MIN_POSITION_DEG=-180` y `MAX_POSITION_DEG=180`.
+3. En `web/.env.local`, configura las direcciones locales REST/WebSocket que ya aparecen en ese archivo.
+4. Reinicia backend y frontend. Abre `../ESP32/` en PlatformIO, compila y sube el programa.
 
 Una sola ESP32 lee el encoder en GPIO 32/33 y controla el motor mediante el BTS7960. GPIO 25/26 son RPWM/LPWM y GPIO 27/14 son R_EN/L_EN. El código cuenta un flanco ascendente del canal A y usa `CPR = 11 × 34 × 4 = 1496`, con el segundo ajuste de escala observado en el motor. Comprueba el ángulo físico después de cargar el firmware para confirmar ese ajuste. La posición al encender es 0° y los ángulos de la página son relativos a ese punto.
 

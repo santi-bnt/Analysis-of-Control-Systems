@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     MAX_POSITION_DEG: float = Field(default=180.0, description="Maximum position command in degrees")
 
     CORS_ORIGINS: str = Field(
-        default="http://localhost:3000,http://127.0.0.1:3000",
+        default="http://localhost:3000,http://127.0.0.1:3000,http://localhost:3017,http://127.0.0.1:3017",
         description="Comma-separated allowed CORS origins",
     )
 

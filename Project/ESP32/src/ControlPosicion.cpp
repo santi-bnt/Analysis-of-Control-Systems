@@ -69,6 +69,7 @@ void tareaControl(void*) {
 
 #if defined(CONTROL_MODE_P)
       salida = KP * error;
+      
 #elif defined(CONTROL_MODE_PI)
       const float salidaPropuesta = KP * error + KI * integralPropuesta;
       const bool integralEmpujaSaturacion =
@@ -78,6 +79,7 @@ void tareaControl(void*) {
         integral = integralPropuesta;
       }
       salida = KP * error + KI * integral;
+      
 #elif defined(CONTROL_MODE_PID)
       const float salidaPropuesta =
           KP * error + KI * integralPropuesta + KD * derivada;
@@ -111,7 +113,7 @@ void tareaControl(void*) {
     }
   }
 }
-}  // namespace
+}  
 
 namespace ControlPosicion {
 void iniciarHardware() {

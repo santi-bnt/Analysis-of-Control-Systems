@@ -42,7 +42,7 @@ El motor espera una referencia válida de la página. No alterna referencias ni 
 
 En `setup()`, el main llama a `ComunicacionPagina::iniciar()`. En cada paso del control, `leerComando()` entrega la referencia y si se permite mover el motor. `actualizarTelemetria()` guarda referencia, ángulo, error y salida; otra tarea los publica por MQTT.
 
-Configura Wi-Fi, broker y credenciales en `include/Secrets.h`. Para el broker local, usa la IP de tu PC, puerto 1883 y `MQTT_USE_TLS=false`. La ESP32 no puede usar `127.0.0.1` para llegar a tu PC. Para un broker con TLS, usa `MQTT_USE_TLS=true` y configura `MQTT_ROOT_CA_PEM`. Sigue `../pagina_esp/README.md` para conectar la página al dispositivo real.
+Configura Wi-Fi, broker y credenciales en `include/Secrets.h`. Para el broker local, usa la IP de tu PC, puerto 1883 y `MQTT_USE_TLS=false`. La ESP32 no puede usar `127.0.0.1` para llegar a tu PC. Para un broker con TLS, usa `MQTT_USE_TLS=true` y configura `MQTT_ROOT_CA_PEM`. Sigue `../ESP_Web_page/README.md` para conectar la página al dispositivo real.
 
 Compila con **PlatformIO: Build** y carga con **PlatformIO: Upload**. El monitor serial usa 115200 baudios y muestra referencia, ángulo, RPM, error y salida.
 
@@ -51,19 +51,19 @@ Compila con **PlatformIO: Build** y carga con **PlatformIO: Upload**. El monitor
 Conecta la ESP32 por USB y ejecuta:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\ESP32'
-& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' run --target upload
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Project\ESP32'
+& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' run --target upload --upload-port COM3
 ```
 
-Este comando compila y sube el firmware.
+Este comando compila y sube el firmware. Si aparece `Wrong boot mode` o se queda en `Connecting...`, mantén presionado **BOOT** en la placa mientras intenta conectar; suéltalo cuando empiece `Writing at...`.
 
 ## Abrir la terminal de la ESP32
 
 Cuando termine la carga, ejecuta en esa terminal o en otra:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Proyecto\ESP32'
-& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' device monitor --baud 115200
+Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Project\ESP32'
+& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' device monitor --port COM3 --baud 115200
 ```
 
 Pulsa **Ctrl+C** para cerrar el monitor antes de volver a subir código: ambos comandos usan el mismo puerto USB.
@@ -74,12 +74,12 @@ Si PlatformIO no detecta el puerto, lista los dispositivos:
 & 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' device list
 ```
 
-Usa el puerto que aparezca, por ejemplo `COM5`: añade `--upload-port COM5` al comando de carga y `--port COM5` al comando del monitor.
+Usa el puerto que aparezca, por ejemplo `COM5`: añade `--upload-port COM5` al comando de carga y `--port COM5` al comando del monitor. Si la lista sale vacía, Windows no está detectando la ESP32; prueba un cable USB de datos, otro puerto USB y revisa en el Administrador de dispositivos el controlador del conversor USB-serial de la placa.
 
 ## Si la página muestra OFFLINE
 
 El USB permite cargar código y ver el monitor; el estado ONLINE llega por MQTT. La ESP32 debe conectarse a Wi-Fi y al broker, y el backend también debe estar conectado a ese broker.
 
-Para MQTT local, abre Docker Desktop y arranca el broker siguiendo `../pagina_esp/README.md`. El monitor muestra `[WiFi] Reconectando`, los intentos MQTT y `[MQTT] motor-01 conectado` cuando la conexión funciona. Si cambias el firmware o `Secrets.h`, vuelve a subir el código.
+Para MQTT local, abre Docker Desktop y arranca el broker siguiendo `../ESP_Web_page/README.md`. El monitor muestra `[WiFi] Reconectando`, los intentos MQTT y `[MQTT] motor-01 conectado` cuando la conexión funciona. Si cambias el firmware o `Secrets.h`, vuelve a subir el código.
 
 Antes de una prueba con carga, verifica que una orden positiva produzca un aumento del ángulo medido. Si el sentido del encoder y el motor no coinciden, el control se moverá en la dirección equivocada.

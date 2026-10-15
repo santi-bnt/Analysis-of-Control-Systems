@@ -52,9 +52,9 @@ constexpr unsigned long WIFI_RETRY_MS = 5000;
 constexpr unsigned long MQTT_RETRY_MS = 5000;
 
 // Selecciona un solo controlador: deja su define activo y comenta los otros.
-// #define CONTROL_MODE_P
-// #define CONTROL_MODE_PI
-#define CONTROL_MODE_PID
+#define CONTROL_MODE_P
+//#define CONTROL_MODE_PI
+//#define CONTROL_MODE_PID
 
 #if (defined(CONTROL_MODE_P) + defined(CONTROL_MODE_PI) + defined(CONTROL_MODE_PID)) != 1
 #error "Activa exactamente un modo: CONTROL_MODE_P, CONTROL_MODE_PI o CONTROL_MODE_PID"

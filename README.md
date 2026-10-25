@@ -8,7 +8,7 @@ MATLAB/Simulink models, and a Cartesian tic-tac-toe game for Meta Quest.
 | Folder | Contents |
 | --- | --- |
 | [`Project/`](Project/README.md) | Project overview and instructions to run the motor dashboard and firmware. |
-| [`Juego/`](Juego/README.md) | Meta Quest tic-tac-toe, Cartesian machine, game app, and wiring. |
+| [`game/`](game/README.md) | Meta Quest tic-tac-toe, Cartesian machine, game app, and wiring. |
 | [`Matlab/`](Matlab/) | MATLAB scripts, Simulink models, and response data. |
 | [`practice1/`](practice1/) | Original PlatformIO PID exercise. |
 
@@ -20,7 +20,7 @@ MATLAB/Simulink models, and a Cartesian tic-tac-toe game for Meta Quest.
 
 ## Wiring diagrams
 
-- [Cartesian game](Juego/conexiones/index.html) · [wiring guide](Juego/conexiones/README.md)
+- [Cartesian game](game/conexiones/index.html) · [wiring guide](game/conexiones/README.md)
 - [ESP32 motor controller](Project/ESP32/Conexion_diagram/index.html)
 
 The wiring diagrams are standalone HTML files. Download or open them in a

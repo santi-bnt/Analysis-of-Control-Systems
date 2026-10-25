@@ -1,4 +1,10 @@
-# Tic-Cat-Toe: Cartesian tic-tac-toe
+# Tic-Cat-Toe: Cartesian Tic-Tac-Toe for Meta Quest
+
+Tic-Cat-Toe is part of the **Analysis of Control Systems** project. It combines
+the team's Cartesian machine, ESP32 motor control, sensor-based move detection,
+and a two-player Meta Quest game. The X-axis controller originated in this
+repository; the game integration adapts the project to use UART between the
+ESP32 controllers and BLE between the game and ESP32-S3.
 
 Two Meta Quest headsets play tic-tac-toe using an X/Y Cartesian machine.
 During a turn, the player moves the machine head over a virtual board. When
@@ -6,11 +12,6 @@ the player fires or the 20-second timer expires, the machine waits for the head
 to settle and reads the LDR array. A free detected cell receives that player's
 piece; a missed or occupied cell loses the turn. Control then passes to the
 other headset.
-
-Imported from [Sesgaro/meta_apps_control](https://github.com/Sesgaro/meta_apps_control),
-commit `126db217a2f8515904fb1f4da31aedec4dbaba97`. The X controller originated in
-[Analysis-of-Control-Systems](https://github.com/santi-bnt/Analysis-of-Control-Systems),
-with UART replacing Wi-Fi/MQTT.
 
 ```text
 Quest 1 ─┐ BLE                    UART (TX/RX/GND)
@@ -194,3 +195,9 @@ python tool/cabeza_a_glb.py   # Cat heads and sprite faces for game reactions
 
 Faces show normal, miss, loss, hit, and win reactions. Background music is
 optional: a local `android/app/src/quest/res/raw/musica.ogg` is excluded from Git.
+
+## Credits
+
+The Quest app and some game assets build on
+[Sesgaro/meta_apps_control](https://github.com/Sesgaro/meta_apps_control),
+commit `126db217a2f8515904fb1f4da31aedec4dbaba97`.

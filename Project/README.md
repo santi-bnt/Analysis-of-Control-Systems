@@ -1,7 +1,7 @@
 # Projects
 
-This folder contains the ESP32 motor controller, its dashboard and API, a
-and a Quest WebXR client.
+This folder contains the ESP32 motor controller, its dashboard and API, and a
+Quest WebXR client.
 
 | Folder | Purpose |
 | --- | --- |
@@ -10,7 +10,7 @@ and a Quest WebXR client.
 | [`quest3/`](quest3/README.md) | WebXR controller for the Quest browser. |
 
 Wiring: [ESP32 motor controller](ESP32/Conexion_diagram/index.html). The
-Cartesian game has its own wiring guide in [`../Juego/`](../Juego/README.md).
+Cartesian game has its own wiring guide in [`../game/`](../game/README.md).
 
 ## Run the motor dashboard
 

@@ -29,7 +29,7 @@ const escena = new Escena(elemento('vista'), motor, angulo => {
   referencia.value = angulo + '°';
   if (document.activeElement !== numero) numero.value = String(angulo);
 }, () => {
-  entrarVR.textContent = 'Entrar con passthrough';
+  entrarVR.textContent = 'Enter with passthrough';
   void motor.parar();
 });
 
@@ -37,7 +37,7 @@ motor.observar(datos => {
   estado.textContent = datos.online && datos.conectado ? 'ONLINE' : 'OFFLINE';
   estado.classList.toggle('online', datos.online && datos.conectado);
   mensaje.textContent = datos.mensaje;
-  modo.textContent = `MOTOR REAL · ${motor.dispositivo}`;
+  modo.textContent = `PHYSICAL MOTOR · ${motor.dispositivo}`;
   const disponible = motor.puedeMover();
   slider.disabled = !disponible;
   numero.disabled = !disponible;
@@ -59,7 +59,7 @@ formulario.addEventListener('submit', async evento => {
     parar.disabled = false;
     entrarVR.disabled = !compatibleVR;
   } catch (error) {
-    mensaje.textContent = `No se pudo conectar: ${(error as Error).message}`;
+    mensaje.textContent = `Could not connect: ${(error as Error).message}`;
   } finally { boton.disabled = false; }
 });
 
@@ -86,14 +86,14 @@ reset.addEventListener('click', () => void motor.restablecer());
 
 async function comprobarVR(): Promise<void> {
   if (!window.isSecureContext) {
-    entrarVR.textContent = 'VR necesita una conexión HTTPS segura';
+    entrarVR.textContent = 'VR requires a secure HTTPS connection';
     return;
   }
   try {
     compatibleVR = !!navigator.xr && await navigator.xr.isSessionSupported('immersive-ar');
-    entrarVR.textContent = compatibleVR ? 'Entrar con passthrough' : 'Abre esta dirección en el navegador del Quest';
+    entrarVR.textContent = compatibleVR ? 'Enter with passthrough' : 'Open this address in the Quest browser';
     entrarVR.disabled = !compatibleVR || !autenticado;
-  } catch { entrarVR.textContent = 'El navegador no permite iniciar VR'; }
+  } catch { entrarVR.textContent = 'The browser cannot start VR'; }
 }
 
 entrarVR.addEventListener('click', async () => {
@@ -105,7 +105,7 @@ entrarVR.addEventListener('click', async () => {
       optionalFeatures: ['hand-tracking'],
     });
     await escena.renderer.xr.setSession(session);
-    entrarVR.textContent = 'Salir de VR';
+    entrarVR.textContent = 'Exit VR';
     session.addEventListener('visibilitychange', () => {
       if (session.visibilityState !== 'visible' && !pausaSolicitada) {
         pausaSolicitada = true;
@@ -114,7 +114,7 @@ entrarVR.addEventListener('click', async () => {
       if (session.visibilityState === 'visible') pausaSolicitada = false;
     });
   } catch (error) {
-    mensaje.textContent = `No se pudo iniciar VR: ${(error as Error).message}`;
+    mensaje.textContent = `Could not start VR: ${(error as Error).message}`;
   }
 });
 document.addEventListener('visibilitychange', () => {

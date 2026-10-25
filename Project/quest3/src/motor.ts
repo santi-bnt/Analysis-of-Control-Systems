@@ -6,7 +6,7 @@ type Avisar = (estado: EstadoMotor) => void;
 export class Motor {
   readonly estado: EstadoMotor = {
     online: false, conectado: false, detenido: false,
-    telemetria: null, historial: [], mensaje: 'Sin conectar.',
+    telemetria: null, historial: [], mensaje: 'Disconnected.',
   };
   private clave = '';
   private socket: WebSocket | null = null;
@@ -37,9 +37,9 @@ export class Motor {
       },
     });
     if (!respuesta.ok) {
-      if (respuesta.status === 401) throw new Error('Clave de acceso incorrecta.');
+      if (respuesta.status === 401) throw new Error('Incorrect access token.');
       const datos = await respuesta.json().catch(() => ({}));
-      throw new Error(typeof datos.detail === 'string' ? datos.detail : 'No se pudo comunicar con el backend.');
+      throw new Error(typeof datos.detail === 'string' ? datos.detail : 'Could not communicate with the backend.');
     }
     return respuesta;
   }
@@ -61,14 +61,14 @@ export class Motor {
         this.estado.online = false;
         this.pendiente = null;
         this.manteniendoReferencia = false;
-        this.mensaje('Sin telemetría reciente. Comprueba la conexión de la ESP32.');
+        this.mensaje('No recent telemetry. Check the ESP32 connection.');
       }
       this.enviarPendiente();
       if (this.puedeMover() && this.manteniendoReferencia && Date.now() - ultimoHeartbeat >= 2000) {
         ultimoHeartbeat = Date.now();
         this.peticion(this.ruta('heartbeat'), { method: 'POST' }).catch(error => {
           this.manteniendoReferencia = false;
-          this.mensaje(`No se pudo mantener el comando: ${error.message}`);
+          this.mensaje(`Could not refresh the command: ${error.message}`);
         });
       }
     }, 100);
@@ -102,7 +102,7 @@ export class Motor {
         if (datos.type === 'init') {
           this.estado.conectado = true;
           this.aplicarDispositivo(datos.device);
-          this.mensaje(this.estado.online ? 'Conectado. Mueve la bolita para enviar grados.' : 'ESP32 offline. Esperando telemetría.');
+          this.mensaje(this.estado.online ? 'Connected. Move the ball to set the angle.' : 'ESP32 offline. Waiting for telemetry.');
         } else if (datos.type === 'telemetry') {
           this.guardarTelemetria(datos);
           this.estado.online = true;
@@ -115,7 +115,7 @@ export class Motor {
           }
           this.avisar();
         }
-      } catch { this.mensaje('El backend envió un mensaje no válido.'); }
+      } catch { this.mensaje('The backend sent an invalid message.'); }
     };
     socket.onclose = evento => {
       if (socket !== this.socket) return;
@@ -124,10 +124,10 @@ export class Motor {
       this.pendiente = null;
       this.manteniendoReferencia = false;
       if (evento.code === 1008) {
-        this.mensaje('WebSocket rechazado: revisa la clave y BACKEND_WS_ORIGIN.');
+        this.mensaje('WebSocket rejected: check the access token and BACKEND_WS_ORIGIN.');
         return;
       }
-      this.mensaje('Conexión perdida. Reconectando…');
+      this.mensaje('Connection lost. Reconnecting…');
       this.reconexion = setTimeout(() => this.abrirSocket(), 3000);
     };
     socket.onerror = () => socket.close();
@@ -149,18 +149,18 @@ export class Motor {
     const generacion = this.generacion;
     this.pendiente = null;
     this.ultimoEnvio = Date.now();
-    // Una sola petición en vuelo; los movimientos siguientes reemplazan el pendiente.
+    // Only one request in flight; subsequent moves replace the pending setpoint.
     this.enviando = this.peticion(this.ruta('setpoint'), {
       method: 'POST', body: JSON.stringify({ value: valor }),
     }).then(() => {
       if (generacion !== this.generacion) return;
       this.manteniendoReferencia = true;
-      this.mensaje(`Referencia enviada: ${valor}°.`);
+      this.mensaje(`Setpoint sent: ${valor}°.`);
     }).catch(error => {
       if (generacion !== this.generacion) return;
       this.pendiente = null;
       this.manteniendoReferencia = false;
-      this.mensaje(`No se envió la referencia: ${error.message}`);
+      this.mensaje(`Setpoint was not sent: ${error.message}`);
     }).finally(() => { this.enviando = null; });
   }
 
@@ -173,9 +173,9 @@ export class Motor {
     if (!this.clave) return;
     try {
       await this.peticion(this.ruta('estop'), { method: 'POST', keepalive: true });
-      this.mensaje('Paro enviado. Pulsa Restablecer antes de volver a mover.');
+      this.mensaje('Stop sent. Select Reset before moving again.');
     } catch (error) {
-      this.mensaje(`Paro no confirmado: ${(error as Error).message}`);
+      this.mensaje(`Stop not confirmed: ${(error as Error).message}`);
     }
   }
 
@@ -185,12 +185,12 @@ export class Motor {
     this.manteniendoReferencia = false;
     this.generacion++;
     this.avisar();
-    // No dejamos que una referencia anterior llegue después del reset.
+    // Prevent an older setpoint from arriving after reset.
     await this.enviando;
     try {
       await this.peticion(this.ruta('reset'), { method: 'POST' });
       this.estado.detenido = false;
-      this.mensaje('Restablecido. Mueve la bolita para enviar una nueva referencia.');
+      this.mensaje('Reset complete. Move the ball to send a new setpoint.');
     } catch (error) { this.mensaje((error as Error).message); }
   }
 
@@ -200,7 +200,7 @@ export class Motor {
     this.clave = '';
     this.estado.online = false;
     this.estado.detenido = false;
-    this.mensaje('Sin conectar.');
+    this.mensaje('Disconnected.');
   }
 
   private cerrarConexion(): void {

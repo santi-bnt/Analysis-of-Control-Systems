@@ -24,17 +24,17 @@ export class Panel {
     c.textAlign = 'left';
     c.font = '700 40px sans-serif';
     c.fillStyle = '#e8f0ff';
-    c.fillText(this.dispositivo + ' · CONTROL DE POSICIÓN', 60, 70);
+    c.fillText(this.dispositivo + ' · POSITION CONTROL', 60, 70);
     c.font = '600 28px sans-serif';
     c.fillStyle = estado.online && estado.conectado ? '#70e3d2' : '#ffa7b9';
     c.fillText(estado.online && estado.conectado ? 'ONLINE' : 'OFFLINE', 60, 124);
     c.fillStyle = '#9aabc4';
-    c.fillText('MOTOR REAL', 280, 124);
-    c.fillText(estado.conectado ? 'Datos en vivo' : 'WebSocket desconectado', 1000, 124);
+    c.fillText('PHYSICAL MOTOR', 280, 124);
+    c.fillText(estado.conectado ? 'Live data' : 'WebSocket disconnected', 1000, 124);
     const t = estado.telemetria;
     const tarjetas = [
-      ['Referencia recibida', t?.setpoint, '°', '#91a7ff'],
-      ['Posición del encoder', t?.position, '°', '#70e3d2'],
+      ['Confirmed setpoint', t?.setpoint, '°', '#91a7ff'],
+      ['Encoder position', t?.position, '°', '#70e3d2'],
       ['Error', t?.error, '°', '#ffd484'],
       ['PWM / control', t?.pwm, '%', '#d5a1ff'],
     ] as const;
@@ -49,15 +49,15 @@ export class Panel {
     });
     c.font = '600 27px sans-serif';
     c.fillStyle = '#e8f0ff';
-    c.fillText('Últimos 60 segundos', 60, 350);
-    c.fillStyle = '#91a7ff'; c.fillText('— Referencia', 880, 350);
-    c.fillStyle = '#70e3d2'; c.fillText('— Posición', 1170, 350);
+    c.fillText('Last 60 seconds', 60, 350);
+    c.fillStyle = '#91a7ff'; c.fillText('— Setpoint', 880, 350);
+    c.fillStyle = '#70e3d2'; c.fillText('— Position', 1170, 350);
     this.grafica(estado);
     c.font = '700 38px sans-serif';
     c.fillStyle = estado.detenido ? '#ffa7b9' : '#70e3d2';
-    c.fillText(estado.detenido ? 'MOTOR DETENIDO' : `Tu referencia: ${referencia}°`, 60, 850);
+    c.fillText(estado.detenido ? 'MOTOR STOPPED' : `Your setpoint: ${referencia}°`, 60, 850);
     c.font = '25px sans-serif'; c.fillStyle = '#9aabc4';
-    c.fillText(agarrado ? 'Sigue moviendo la bolita. Suéltala para mantener el ángulo.' : 'Agarra la bolita y deslízala. Rango: −180° a +180°.', 60, 900);
+    c.fillText(agarrado ? 'Keep moving the ball. Release to hold the angle.' : 'Grab the ball and slide it. Range: −180° to +180°.', 60, 900);
     c.font = '22px sans-serif';
     this.texto(estado.mensaje, 60, 950, 1480);
     this.textura.needsUpdate = true;
@@ -78,7 +78,7 @@ export class Panel {
     }
     for (const segundos of [-60, -45, -30, -15, 0]) {
       const x = left + width * (1 + segundos / 60);
-      c.fillStyle = '#9aabc4'; c.fillText(segundos === 0 ? 'Ahora' : segundos + ' s', x - 25, top + height + 40);
+      c.fillStyle = '#9aabc4'; c.fillText(segundos === 0 ? 'Now' : segundos + ' s', x - 25, top + height + 40);
     }
     c.save();
     c.beginPath(); c.rect(left, top, width, height); c.clip();
@@ -96,7 +96,7 @@ export class Panel {
     c.restore();
     if (!estado.historial.length) {
       c.fillStyle = '#9aabc4'; c.font = '28px sans-serif';
-      c.fillText('Esperando lecturas del motor…', 500, 580);
+      c.fillText('Waiting for motor readings…', 500, 580);
     }
   }
 

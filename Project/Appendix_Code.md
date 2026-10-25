@@ -1,6 +1,6 @@
 # Encoder Reading and P, PI, and PID Control Code Appendix
 
-Select exactly one mode in `include/Config.h`. PID is active in the current firmware; comment `CONTROL_MODE_PID` and uncomment `CONTROL_MODE_P` or `CONTROL_MODE_PI` to change modes. The control task uses a 10 ms period. PI and PID include conditional integral anti-windup. The gains from the supplied practice PID are `KP = 4.5122`, `KI = 21.0020`, and `KD = 0.1834`. The original example uses an analog input and DAC output for a different plant; this firmware applies its PID equation and gains to the motor encoder and BTS7960. These gains have not been validated on that motor.
+Select exactly one mode in `include/Config.h`. P is active in the current firmware; comment `CONTROL_MODE_P` and uncomment `CONTROL_MODE_PI` or `CONTROL_MODE_PID` to change modes. The control task uses a 10 ms period. PI and PID include conditional integral anti-windup. The gains from the supplied practice PID are `KP = 4.5122`, `KI = 21.0020`, and `KD = 0.1834`. The original example uses an analog input and DAC output for a different plant; this firmware applies its PID equation and gains to the motor encoder and BTS7960. These gains have not been validated on that motor.
 ## src/main.cpp
 
 ```cpp
@@ -18,7 +18,6 @@ void setup() {
 void loop() {
   vTaskDelay(pdMS_TO_TICKS(1000));
 }
-
 ```
 
 ## src/ControlPosicion.cpp
@@ -95,6 +94,7 @@ void tareaControl(void*) {
 
 #if defined(CONTROL_MODE_P)
       salida = KP * error;
+
 #elif defined(CONTROL_MODE_PI)
       const float salidaPropuesta = KP * error + KI * integralPropuesta;
       const bool integralEmpujaSaturacion =
@@ -104,6 +104,7 @@ void tareaControl(void*) {
         integral = integralPropuesta;
       }
       salida = KP * error + KI * integral;
+
 #elif defined(CONTROL_MODE_PID)
       const float salidaPropuesta =
           KP * error + KI * integralPropuesta + KD * derivada;
@@ -130,14 +131,14 @@ void tareaControl(void*) {
     if (transcurrido >= TELEMETRY_PERIOD_MS) {
       const long pulsosNuevos = conteoActual - conteoAnterior;
       const float rpm = fabsf((pulsosNuevos / CPR) * 60000.0f / transcurrido);
-      Serial.printf("Ref: %.1f | Angulo: %.2f | RPM: %.2f | Error: %.2f | U: %.1f\\n",
+      Serial.printf("Ref: %.1f | Angle: %.2f | RPM: %.2f | Error: %.2f | U: %.1f\\n",
                     referencia, angulo, rpm, error, salida);
       conteoAnterior = conteoActual;
       tiempoAnterior = ahora;
     }
   }
 }
-}  // namespace
+}
 
 namespace ControlPosicion {
 void iniciarHardware() {
@@ -160,11 +161,10 @@ void iniciarTarea() {
       tareaControl, "ControlPosicion", 4096, nullptr, 5, nullptr, 1);
   if (resultado != pdPASS) {
     detenerMotor();
-    Serial.println("[Control] No se pudo iniciar la tarea; motor detenido.");
+    Serial.println("[Control] Could not start task; motor stopped.");
   }
 }
 }
-
 ```
 
 ## src/ControlPosicion.h
@@ -176,7 +176,6 @@ namespace ControlPosicion {
 void iniciarHardware();
 void iniciarTarea();
 }
-
 ```
 
 ## src/ComunicacionPagina.cpp
@@ -196,7 +195,7 @@ WiFiClient clienteLocal;
 WiFiClientSecure clienteSeguro;
 PubSubClient mqtt;
 
-// El control y la red comparten estos datos desde dos tareas.
+// Control and network tasks share this data.
 portMUX_TYPE bloqueoDatos = portMUX_INITIALIZER_UNLOCKED;
 
 float referencia = 0.0f;
@@ -301,7 +300,7 @@ void tareaComunicacion(void*) {
 
       if (ahora - ultimoIntentoWifi >= WIFI_RETRY_MS) {
         ultimoIntentoWifi = ahora;
-        Serial.printf("[WiFi] Reconectando; estado: %d\n", WiFi.status());
+        Serial.printf("[WiFi] Reconnecting; status: %d\n", WiFi.status());
         WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
       }
       vTaskDelay(pdMS_TO_TICKS(100));
@@ -311,7 +310,7 @@ void tareaComunicacion(void*) {
     if (MQTT_USE_TLS && time(nullptr) < 1700000000) {
       if (!relojIniciado) {
         configTime(0, 0, "pool.ntp.org", "time.nist.gov");
-        Serial.println("[TLS] Sincronizando la hora...");
+        Serial.println("[TLS] Synchronizing time...");
         relojIniciado = true;
       }
       vTaskDelay(pdMS_TO_TICKS(100));
@@ -325,7 +324,7 @@ void tareaComunicacion(void*) {
 
     if (!mqtt.connected() && ahora - ultimoIntentoMqtt >= MQTT_RETRY_MS) {
       ultimoIntentoMqtt = ahora;
-      Serial.printf("[MQTT] Conectando a %s:%d; IP ESP32: %s\n",
+      Serial.printf("[MQTT] Connecting to %s:%d; ESP32 IP: %s\n",
                     MQTT_HOST, MQTT_PORT, WiFi.localIP().toString().c_str());
       const bool conectado = mqtt.connect(
           DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD,
@@ -334,9 +333,9 @@ void tareaComunicacion(void*) {
       if (conectado) {
         mqtt.subscribe(temaComandos, 1);
         mqtt.publish(temaEstado, "online", true);
-        Serial.printf("[MQTT] %s conectado\n", DEVICE_ID);
+        Serial.printf("[MQTT] %s connected\n", DEVICE_ID);
       } else {
-        Serial.printf("[MQTT] Fallo de conexion; codigo: %d\n", mqtt.state());
+        Serial.printf("[MQTT] Connection failed; code: %d\n", mqtt.state());
       }
 
       portENTER_CRITICAL(&bloqueoDatos);
@@ -371,18 +370,18 @@ void iniciar() {
 
   if (!MQTT_USE_TLS) {
     mqtt.setClient(clienteLocal);
-    Serial.println("[MQTT] Conexion local sin TLS.");
+    Serial.println("[MQTT] Local connection without TLS.");
   } else {
     mqtt.setClient(clienteSeguro);
     if (MQTT_ROOT_CA_PEM[0] == '\0') {
-      Serial.println("Falta MQTT_ROOT_CA_PEM en include/Secrets.h para conectar con TLS.");
+      Serial.println("Set MQTT_ROOT_CA_PEM in include/Secrets.h to connect using TLS.");
     } else {
       clienteSeguro.setCACert(MQTT_ROOT_CA_PEM);
       certificadoConfigurado = true;
     }
   }
 
-  // La red corre en el otro núcleo para no bloquear el control.
+  // Run networking on the other core to avoid blocking control.
   xTaskCreatePinnedToCore(tareaComunicacion, "WiFiMQTT", 8192, nullptr, 2, nullptr, 0);
 }
 
@@ -398,7 +397,7 @@ Comando leerComando() {
 }
 
 void actualizarTelemetria(float ref, float posicion, float error, float salida) {
-  // Guardamos las lecturas; la tarea de red las envía después.
+  // Store readings for the network task to transmit later.
   portENTER_CRITICAL(&bloqueoDatos);
   referenciaTelemetria = ref;
   posicionActual = posicion;
@@ -408,7 +407,6 @@ void actualizarTelemetria(float ref, float posicion, float error, float salida) 
 }
 
 }  // namespace ComunicacionPagina
-
 ```
 
 ## src/ComunicacionPagina.h
@@ -428,7 +426,6 @@ Comando leerComando();
 void actualizarTelemetria(float referencia, float posicion, float error, float salida);
 
 }  // namespace ComunicacionPagina
-
 ```
 
 ## include/Config.h
@@ -438,7 +435,7 @@ void actualizarTelemetria(float referencia, float posicion, float error, float s
 
 #include <Arduino.h>
 
-// Las credenciales y el certificado del broker van en Secrets.h.
+// Credentials and the broker certificate belong in Secrets.h.
 #if __has_include("Secrets.h")
 #include "Secrets.h"
 #endif
@@ -487,13 +484,13 @@ constexpr unsigned long STALE_COMMAND_TIMEOUT_MS = 5000;
 constexpr unsigned long WIFI_RETRY_MS = 5000;
 constexpr unsigned long MQTT_RETRY_MS = 5000;
 
-// Selecciona un solo controlador: deja su define activo y comenta los otros.
-// #define CONTROL_MODE_P
-// #define CONTROL_MODE_PI
-#define CONTROL_MODE_PID
+// Enable exactly one controller and leave the other defines commented.
+#define CONTROL_MODE_P
+//#define CONTROL_MODE_PI
+//#define CONTROL_MODE_PID
 
 #if (defined(CONTROL_MODE_P) + defined(CONTROL_MODE_PI) + defined(CONTROL_MODE_PID)) != 1
-#error "Activa exactamente un modo: CONTROL_MODE_P, CONTROL_MODE_PI o CONTROL_MODE_PID"
+#error "Enable exactly one mode: CONTROL_MODE_P, CONTROL_MODE_PI, or CONTROL_MODE_PID"
 #endif
 
 // Gains copied from the supplied practice PID; validate them on the motor.
@@ -502,12 +499,10 @@ constexpr float KI = 21.0020f;
 constexpr float KD = 0.1834f;
 constexpr float PPR = 11.0f;
 constexpr float REDUCCION = 34.0f;
-// Se cuenta un flanco RISING de A, igual que en el código del motor.
-// Segundo ajuste: 180 grados indicados correspondían a unos 90 grados reales.
-constexpr float CPR = PPR * REDUCCION * 4.0f;  // 1496 pulsos por vuelta
+// Count A rising edges as in the motor implementation. Second scale adjustment: indicated 180 degrees corresponded to about 90 physical degrees.
+constexpr float CPR = PPR * REDUCCION * 4.0f;  // 1496 counts per revolution.
 constexpr float MIN_POSITION_DEG = -180.0f;
 constexpr float MAX_POSITION_DEG = 180.0f;
-
 ```
 
 ## platformio.ini
@@ -522,5 +517,4 @@ monitor_speed = 115200
 lib_deps =
     knolleary/PubSubClient @ ^2.8
     bblanchon/ArduinoJson @ ^7.0.0
-
 ```

@@ -42,7 +42,7 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res.status === 401) {
-        setAccessError('Clave de acceso incorrecta.');
+        setAccessError('Incorrect access token.');
         setAccessToken('');
         sessionStorage.removeItem('motor-control-token');
         return;
@@ -248,11 +248,11 @@ export default function Dashboard() {
             setAccessError('');
             setAccessToken(token);
           }}>
-            <h1 className="mb-2 text-xl font-bold">Acceso al motor</h1>
-            <p className="mb-4 text-sm text-slate-400">Introduce la clave configurada en el backend.</p>
-            <input type="password" autoComplete="off" value={tokenInput} onChange={(event) => setTokenInput(event.target.value)} aria-label="Clave de acceso" className="mb-3 w-full rounded-lg border border-slate-600 bg-slate-950 p-3" />
+            <h1 className="mb-2 text-xl font-bold">Motor access</h1>
+            <p className="mb-4 text-sm text-slate-400">Enter the access token configured in the backend.</p>
+            <input type="password" autoComplete="off" value={tokenInput} onChange={(event) => setTokenInput(event.target.value)} aria-label="Access token" className="mb-3 w-full rounded-lg border border-slate-600 bg-slate-950 p-3" />
             {accessError && <p className="mb-3 text-sm text-rose-400">{accessError}</p>}
-            <button type="submit" className="w-full rounded-lg bg-indigo-600 p-3 font-semibold">Entrar</button>
+            <button type="submit" className="w-full rounded-lg bg-indigo-600 p-3 font-semibold">Sign in</button>
           </form>
         </div>
       )}

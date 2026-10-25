@@ -12,7 +12,7 @@ WiFiClient clienteLocal;
 WiFiClientSecure clienteSeguro;
 PubSubClient mqtt;
 
-// El control y la red comparten estos datos desde dos tareas.
+// Control and network tasks share this data.
 portMUX_TYPE bloqueoDatos = portMUX_INITIALIZER_UNLOCKED;
 
 float referencia = 0.0f;
@@ -117,7 +117,7 @@ void tareaComunicacion(void*) {
 
       if (ahora - ultimoIntentoWifi >= WIFI_RETRY_MS) {
         ultimoIntentoWifi = ahora;
-        Serial.printf("[WiFi] Reconectando; estado: %d\n", WiFi.status());
+        Serial.printf("[WiFi] Reconnecting; status: %d\n", WiFi.status());
         WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
       }
       vTaskDelay(pdMS_TO_TICKS(100));
@@ -127,7 +127,7 @@ void tareaComunicacion(void*) {
     if (MQTT_USE_TLS && time(nullptr) < 1700000000) {
       if (!relojIniciado) {
         configTime(0, 0, "pool.ntp.org", "time.nist.gov");
-        Serial.println("[TLS] Sincronizando la hora...");
+        Serial.println("[TLS] Synchronizing time...");
         relojIniciado = true;
       }
       vTaskDelay(pdMS_TO_TICKS(100));
@@ -141,7 +141,7 @@ void tareaComunicacion(void*) {
 
     if (!mqtt.connected() && ahora - ultimoIntentoMqtt >= MQTT_RETRY_MS) {
       ultimoIntentoMqtt = ahora;
-      Serial.printf("[MQTT] Conectando a %s:%d; IP ESP32: %s\n",
+      Serial.printf("[MQTT] Connecting to %s:%d; ESP32 IP: %s\n",
                     MQTT_HOST, MQTT_PORT, WiFi.localIP().toString().c_str());
       const bool conectado = mqtt.connect(
           DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD,
@@ -150,9 +150,9 @@ void tareaComunicacion(void*) {
       if (conectado) {
         mqtt.subscribe(temaComandos, 1);
         mqtt.publish(temaEstado, "online", true);
-        Serial.printf("[MQTT] %s conectado\n", DEVICE_ID);
+        Serial.printf("[MQTT] %s connected\n", DEVICE_ID);
       } else {
-        Serial.printf("[MQTT] Fallo de conexion; codigo: %d\n", mqtt.state());
+        Serial.printf("[MQTT] Connection failed; code: %d\n", mqtt.state());
       }
 
       portENTER_CRITICAL(&bloqueoDatos);
@@ -187,18 +187,18 @@ void iniciar() {
 
   if (!MQTT_USE_TLS) {
     mqtt.setClient(clienteLocal);
-    Serial.println("[MQTT] Conexion local sin TLS.");
+    Serial.println("[MQTT] Local connection without TLS.");
   } else {
     mqtt.setClient(clienteSeguro);
     if (MQTT_ROOT_CA_PEM[0] == '\0') {
-      Serial.println("Falta MQTT_ROOT_CA_PEM en include/Secrets.h para conectar con TLS.");
+      Serial.println("Set MQTT_ROOT_CA_PEM in include/Secrets.h to connect using TLS.");
     } else {
       clienteSeguro.setCACert(MQTT_ROOT_CA_PEM);
       certificadoConfigurado = true;
     }
   }
 
-  // La red corre en el otro núcleo para no bloquear el control.
+  // Run networking on the other core to avoid blocking control.
   xTaskCreatePinnedToCore(tareaComunicacion, "WiFiMQTT", 8192, nullptr, 2, nullptr, 0);
 }
 
@@ -214,7 +214,7 @@ Comando leerComando() {
 }
 
 void actualizarTelemetria(float ref, float posicion, float error, float salida) {
-  // Guardamos las lecturas; la tarea de red las envía después.
+  // Store readings for the network task to transmit later.
   portENTER_CRITICAL(&bloqueoDatos);
   referenciaTelemetria = ref;
   posicionActual = posicion;

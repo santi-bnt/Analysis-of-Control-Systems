@@ -62,15 +62,15 @@ export class Escena {
     const riel = new Mesh(new BoxGeometry(MITAD_RIEL * 2, 0.016, 0.016), new MeshStandardMaterial({ color: 0x455b7b }));
     riel.position.set(0, 0.99, -0.62); this.raiz.add(riel);
     this.bolita.position.copy(riel.position); this.raiz.add(this.bolita);
-    const titulo = etiqueta('AGARRA LA BOLITA Y MUEVE LOS GRADOS', 1.05, 0.09);
+    const titulo = etiqueta('GRAB THE BALL AND SET THE ANGLE', 1.05, 0.09);
     titulo.position.set(0, 1.16, -0.68); this.raiz.add(titulo);
     [-180, -90, 0, 90, 180].forEach(angulo => {
       const marca = etiqueta(angulo + '°', 0.17, 0.045);
       marca.position.set(xDesdeAngulo(angulo), 0.885, -0.64); this.raiz.add(marca);
     });
-    const paro = etiqueta('PARAR MOTOR', 0.36, 0.11, '#a32d43');
+    const paro = etiqueta('STOP MOTOR', 0.36, 0.11, '#a32d43');
     paro.position.set(-0.23, 0.71, -0.62);
-    const reset = etiqueta('RESTABLECER', 0.36, 0.11, '#20324c');
+    const reset = etiqueta('RESET', 0.36, 0.11, '#20324c');
     reset.position.set(0.23, 0.71, -0.62);
     this.raiz.add(paro, reset);
     this.interaccion = new Interaccion(this.renderer, this.camara, this.raiz, this.bolita, [

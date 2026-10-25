@@ -106,7 +106,7 @@ void tareaControl(void*) {
     if (transcurrido >= TELEMETRY_PERIOD_MS) {
       const long pulsosNuevos = conteoActual - conteoAnterior;
       const float rpm = fabsf((pulsosNuevos / CPR) * 60000.0f / transcurrido);
-      Serial.printf("Ref: %.1f | Angulo: %.2f | RPM: %.2f | Error: %.2f | U: %.1f\\n",
+      Serial.printf("Ref: %.1f | Angle: %.2f | RPM: %.2f | Error: %.2f | U: %.1f\\n",
                     referencia, angulo, rpm, error, salida);
       conteoAnterior = conteoActual;
       tiempoAnterior = ahora;
@@ -136,7 +136,7 @@ void iniciarTarea() {
       tareaControl, "ControlPosicion", 4096, nullptr, 5, nullptr, 1);
   if (resultado != pdPASS) {
     detenerMotor();
-    Serial.println("[Control] No se pudo iniciar la tarea; motor detenido.");
+    Serial.println("[Control] Could not start task; motor stopped.");
   }
 }
 }

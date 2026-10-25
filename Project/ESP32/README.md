@@ -1,85 +1,95 @@
-# ESP32: motor con control de posición
+# ESP32 motor position controller
 
-Este proyecto usa una sola ESP32, un motor con encoder y el driver BTS7960. Abre esta carpeta como proyecto PlatformIO.
+One ESP32 controls a DC motor with an encoder and a BTS7960 driver. Open this
+folder as a PlatformIO project.
 
-- `src/main.cpp`: inicia el control y la comunicación.
-- `src/ControlPosicion.cpp`: encoder, controlador P/PI/PID seleccionable y salida al BTS7960.
-- `src/ComunicacionPagina.h/.cpp`: Wi-Fi, MQTT, comandos y telemetría.
-- `include/Config.h`: pines, ganancia, resolución del encoder y periodos.
-- `include/Secrets.h`: credenciales privadas y certificado TLS; se excluye de Git.
+| File | Purpose |
+| --- | --- |
+| `src/main.cpp` | Starts control and communication. |
+| `src/ControlPosicion.cpp` | Encoder, selectable P/PI/PID loop, BTS7960 output. |
+| `src/ComunicacionPagina.h/.cpp` | Wi-Fi, MQTT commands, and telemetry. |
+| `include/Config.h` | Pins, gains, encoder resolution, and timing. |
+| `include/Secrets.h` | Private credentials and TLS certificate; excluded from Git. |
 
-## Conexiones
+## Wiring
 
-| Señal | GPIO ESP32 |
-|---|---|
-| Encoder A | 32 |
-| Encoder B | 33 |
-| BTS7960 RPWM | 25 |
-| BTS7960 LPWM | 26 |
-| BTS7960 R_EN | 27 |
-| BTS7960 L_EN | 14 |
-| GND del encoder y del driver | GND común |
+Open the [interactive wiring diagram](Conexion_diagram/index.html) in a local browser.
 
-Los dos cables del motor van a las salidas para motor del BTS7960. La fuente del motor va a la entrada de potencia del driver; el motor no se alimenta desde la ESP32.
+| Signal | ESP32 GPIO |
+| --- | --- |
+| Encoder A / B | 32 / 33 |
+| BTS7960 RPWM / LPWM | 25 / 26 |
+| BTS7960 R_EN / L_EN | 27 / 14 |
+| Encoder and driver GND | Common GND |
 
-Une las tierras de la ESP32, el encoder, el driver y la fuente del motor. La alimentación lógica del driver y la del encoder deben corresponder a sus módulos.
-
-Las señales A/B que entran a la ESP32 deben ser de **3.3 V**; si tu encoder entrega 5 V, adapta los niveles antes de conectarlas.
+Connect the two motor leads to the BTS7960 motor outputs, and the motor supply
+to the driver's power input. Share ground between ESP32, encoder, driver, and
+motor supply. Supply driver logic and encoder according to their specifications.
+Do not power the motor from the ESP32. Encoder A/B inputs must use **3.3 V**
+compatible levels; level-shift 5 V outputs before connecting them.
 
 ## Control
 
-Selecciona P, PI o PID activando un solo `CONTROL_MODE_*` en `include/Config.h`; PID queda activo por defecto. El control usa `error = referencia - angulo` y calcula la salida cada 10 ms; PI y PID incluyen anti-windup. Las ganancias copiadas del PID proporcionado son `KP = 4.5122`, `KI = 21.0020` y `KD = 0.1834`. El ejemplo original usa entrada analógica y DAC para otra planta, por lo que estas ganancias aún deben validarse en el motor con encoder y BTS7960. La salida se limita a -255…255; el driver usa PWM de 5 kHz y 8 bits. La telemetría se envía cada 100 ms.
+Enable exactly one `CONTROL_MODE_*` in `include/Config.h`; P is currently enabled.
+The loop computes setpoint minus measured angle every 10 ms. PI/PID include
+conditional integral anti-windup. Gains are `KP=4.5122`, `KI=21.0020`,
+`KD=0.1834`, copied from an analog-input/DAC exercise for another plant and
+still requiring validation on this motor. Output is limited to −255…255;
+the driver uses 5 kHz, 8-bit PWM. Telemetry is published every 100 ms.
 
-El encoder cuenta flancos ascendentes de A y determina el sentido leyendo B. Se conservan `PPR = 11` y `REDUCCION = 34`, con un factor de escala acumulado de 4: `CPR = 11 × 34 × 4 = 1496`. Este segundo ajuste duplica el valor anterior de 748, porque se observó que 180° indicados correspondían aproximadamente a 90° físicos. Después de cargar el firmware, comprueba el giro físico para confirmar la escala.
+The encoder counts A rising edges and reads B for direction. The retained
+scale is `PPR=11`, `REDUCCION=34`, and `CPR=11×34×4=1496`. This is a calibrated
+scale factor, not a claim of x4 edge decoding in this implementation. It doubled
+the earlier 748 setting after an indicated 180° was observed to be about 90°
+physically. Check the physical rotation after uploading.
 
-La posición del eje al encender define los 0°. La página manda un ángulo relativo a ese punto. El encoder incremental no conserva una posición absoluta al reiniciar.
+Startup position defines 0°; all setpoints are relative to it. The incremental
+encoder does not retain an absolute position across restarts. Motor and encoder
+directions were inverted together: positive output uses RPWM, negative output
+uses LPWM, and the encoder increments when B is HIGH. Upload the firmware for
+source changes to take effect on the connected board.
 
-Se invirtió el sentido de los ángulos: +90° gira hacia donde antes giraba -90°, y viceversa. Para mantener la corrección del control, se invirtieron juntos el conteo del encoder y el sentido del driver. Una salida positiva usa RPWM y una negativa usa LPWM; el encoder suma cuando B está en HIGH. La escala permanece en 1496 pulsos por vuelta. Este cambio requiere volver a subir el firmware; editar el archivo no modifica la ESP32 conectada.
+The motor waits for a valid dashboard command. A stop, MQTT disconnect, or
+expired command disables PWM and driver enables. Reset allows a new command
+without clearing the encoder count. No automatic timed motion test runs.
 
-El motor espera una referencia válida de la página. No alterna referencias ni ejecuta una prueba temporizada. Al recibir paro, perder MQTT o vencer el comando, se apagan los PWM y los enable del driver. Después de un reset espera otro ángulo; el reset no borra el conteo del encoder.
+## Communication
 
-## Comunicación
+`setup()` calls `ComunicacionPagina::iniciar()`. Each control step reads its
+setpoint and motion permission with `leerComando()`. `actualizarTelemetria()`
+stores setpoint, angle, error, and output for a separate MQTT publishing task.
 
-En `setup()`, el main llama a `ComunicacionPagina::iniciar()`. En cada paso del control, `leerComando()` entrega la referencia y si se permite mover el motor. `actualizarTelemetria()` guarda referencia, ángulo, error y salida; otra tarea los publica por MQTT.
+Configure Wi-Fi, broker, and credentials in `include/Secrets.h`. For a local
+broker use your PC's LAN IP, port 1883, and `MQTT_USE_TLS=false`; the ESP32
+cannot reach the PC using `127.0.0.1`. For TLS use `MQTT_USE_TLS=true` and
+configure `MQTT_ROOT_CA_PEM`. Follow the [dashboard guide](../ESP_Web_page/README.md).
 
-Configura Wi-Fi, broker y credenciales en `include/Secrets.h`. Para el broker local, usa la IP de tu PC, puerto 1883 y `MQTT_USE_TLS=false`. La ESP32 no puede usar `127.0.0.1` para llegar a tu PC. Para un broker con TLS, usa `MQTT_USE_TLS=true` y configura `MQTT_ROOT_CA_PEM`. Sigue `../ESP_Web_page/README.md` para conectar la página al dispositivo real.
+## Build, upload, and monitor
 
-Compila con **PlatformIO: Build** y carga con **PlatformIO: Upload**. El monitor serial usa 115200 baudios y muestra referencia, ángulo, RPM, error y salida.
-
-## Subir el código desde PowerShell
-
-Conecta la ESP32 por USB y ejecuta:
-
-```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Project\ESP32'
-& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' run --target upload --upload-port COM3
-```
-
-Este comando compila y sube el firmware. Si aparece `Wrong boot mode` o se queda en `Connecting...`, mantén presionado **BOOT** en la placa mientras intenta conectar; suéltalo cuando empiece `Writing at...`.
-
-## Abrir la terminal de la ESP32
-
-Cuando termine la carga, ejecuta en esa terminal o en otra:
-
-```powershell
-Set-Location -LiteralPath 'C:\Users\santi\OneDrive\Documents\Analysis-of-Control-Systems\Project\ESP32'
-& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' device monitor --port COM3 --baud 115200
-```
-
-Pulsa **Ctrl+C** para cerrar el monitor antes de volver a subir código: ambos comandos usan el mismo puerto USB.
-
-Si PlatformIO no detecta el puerto, lista los dispositivos:
+Run from this folder in PowerShell; replace `COM3` with the detected port:
 
 ```powershell
-& 'C:\Users\santi\.platformio\penv\Scripts\platformio.exe' device list
+& "$env:USERPROFILE\.platformio\penv\Scripts\platformio.exe" device list
+& "$env:USERPROFILE\.platformio\penv\Scripts\platformio.exe" run
+& "$env:USERPROFILE\.platformio\penv\Scripts\platformio.exe" run --target upload --upload-port COM3
+& "$env:USERPROFILE\.platformio\penv\Scripts\platformio.exe" device monitor --port COM3 --baud 115200
 ```
 
-Usa el puerto que aparezca, por ejemplo `COM5`: añade `--upload-port COM5` al comando de carga y `--port COM5` al comando del monitor. Si la lista sale vacía, Windows no está detectando la ESP32; prueba un cable USB de datos, otro puerto USB y revisa en el Administrador de dispositivos el controlador del conversor USB-serial de la placa.
+Alternatively use **PlatformIO: Build** and **PlatformIO: Upload**. The serial
+monitor shows setpoint, angle, RPM, error, and output. Close it with **Ctrl+C**
+before uploading again. If the board reports `Wrong boot mode` or stays at
+`Connecting...`, hold **BOOT** until writing starts. If no USB port appears,
+check a data-capable cable, another USB port, and the USB-serial driver in
+Windows Device Manager.
 
-## Si la página muestra OFFLINE
+## Dashboard remains OFFLINE
 
-El USB permite cargar código y ver el monitor; el estado ONLINE llega por MQTT. La ESP32 debe conectarse a Wi-Fi y al broker, y el backend también debe estar conectado a ese broker.
+USB supports uploading and serial diagnostics; ONLINE status comes from MQTT.
+The ESP32 needs Wi-Fi and broker connectivity, and the backend must connect to
+the same broker. Start Docker Desktop and the local broker as described in the
+dashboard guide. Serial output reports Wi-Fi reconnects, MQTT attempts, and a
+successful `motor-01` connection. Upload again after changing firmware or secrets.
 
-Para MQTT local, abre Docker Desktop y arranca el broker siguiendo `../ESP_Web_page/README.md`. El monitor muestra `[WiFi] Reconectando`, los intentos MQTT y `[MQTT] motor-01 conectado` cuando la conexión funciona. Si cambias el firmware o `Secrets.h`, vuelve a subir el código.
-
-Antes de una prueba con carga, verifica que una orden positiva produzca un aumento del ángulo medido. Si el sentido del encoder y el motor no coinciden, el control se moverá en la dirección equivocada.
+Before applying a load, verify that a positive command increases the measured
+angle. Mismatched motor and encoder directions cause the loop to drive away
+from its setpoint.

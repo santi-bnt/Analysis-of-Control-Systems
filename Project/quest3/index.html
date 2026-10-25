@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,24 +9,24 @@
   <body>
     <main>
       <header>
-        <div><p class="eyebrow">CONTROL DE POSICIÓN · QUEST 3</p><h1>El motor, en tus manos.</h1></div>
-        <span id="estado" class="badge">Sin conectar</span>
+        <div><p class="eyebrow">POSITION CONTROL · QUEST 3</p><h1>Motor control in your hands.</h1></div>
+        <span id="estado" class="badge">Disconnected</span>
       </header>
       <form id="acceso">
-        <label for="clave">Clave de acceso al motor</label>
-        <div class="fila"><input id="clave" type="password" autocomplete="off" required placeholder="La misma clave del dashboard" /><button>Conectar</button></div>
+        <label for="clave">Motor access token</label>
+        <div class="fila"><input id="clave" type="password" autocomplete="off" required placeholder="Same access token as the dashboard" /><button>Connect</button></div>
       </form>
-      <div id="sesion" hidden><span id="modo">Consultando backend…</span><button id="desconectar" class="secundario">Desconectar</button></div>
-      <p id="mensaje" role="status" aria-live="polite">Conecta el backend y entra con tu clave para recibir los datos.</p>
-      <section id="vista" aria-label="Escena 3D del control de posición"></section>
-      <div id="vr"><button id="entrar-vr" disabled>Comprobando compatibilidad VR…</button></div>
+      <div id="sesion" hidden><span id="modo">Checking backend…</span><button id="desconectar" class="secundario">Disconnect</button></div>
+      <p id="mensaje" role="status" aria-live="polite">Start the backend and enter your access token to receive data.</p>
+      <section id="vista" aria-label="3D position-control scene"></section>
+      <div id="vr"><button id="entrar-vr" disabled>Checking VR support…</button></div>
       <section class="controles">
-        <div><h2>Mueve la bolita</h2><p>En VR: agárrala con el mando o pellízcala con la mano y deslízala de lado a lado.</p></div>
-        <label for="angulo">Referencia <output id="referencia">0°</output></label>
+        <div><h2>Move the ball</h2><p>In VR, grab it with a controller or pinch it with your hand, then slide it from side to side.</p></div>
+        <label for="angulo">Setpoint <output id="referencia">0°</output></label>
         <input id="angulo" type="range" min="-180" max="180" step="1" value="0" disabled />
-        <form id="manual" class="fila"><input id="valor" aria-label="Referencia en grados" type="number" min="-180" max="180" step="1" value="0" disabled /><button id="aplicar" disabled>Aplicar grados</button></form>
-        <div class="fila"><button id="paro" class="peligro" disabled>PARAR MOTOR</button><button id="reset" class="secundario" disabled>Restablecer</button></div>
-        <p class="nota">La bolita envía el ángulo mientras se mueve. Al salir de VR se solicita el paro del motor.</p>
+        <form id="manual" class="fila"><input id="valor" aria-label="Setpoint in degrees" type="number" min="-180" max="180" step="1" value="0" disabled /><button id="aplicar" disabled>Apply angle</button></form>
+        <div class="fila"><button id="paro" class="peligro" disabled>STOP MOTOR</button><button id="reset" class="secundario" disabled>Reset</button></div>
+        <p class="nota">The ball sends the angle while moving. Exiting VR requests a motor stop.</p>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>

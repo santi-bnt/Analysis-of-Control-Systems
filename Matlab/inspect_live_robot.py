@@ -15,7 +15,7 @@ import matlab.engine
 sessions = matlab.engine.find_matlab()
 print("SHARED_SESSIONS:", sessions, flush=True)
 if "CodexMATLAB" not in sessions:
-    raise SystemExit("La sesión CodexMATLAB aún no está compartida.")
+    raise SystemExit("The CodexMATLAB session is not shared yet.")
 engine = matlab.engine.connect_matlab("CodexMATLAB")
 engine.eval("disp(version); disp(pwd); disp(find_system('type','block_diagram'));", nargout=0)
 engine.eval(

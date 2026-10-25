@@ -14,8 +14,7 @@ export default defineConfig(({ mode }) => {
     '/health': { target, changeOrigin: true },
     '/ws': {
       target, ws: true, changeOrigin: true,
-      // Este servidor local termina HTTPS y se identifica ante el backend.
-      // La conexión WebSocket sigue exigiendo la clave como primer mensaje.
+      // This local server terminates HTTPS and identifies itself to the backend. WebSocket still requires the access token as its first message.
       headers: { Origin: env.BACKEND_WS_ORIGIN || 'http://localhost:3000' },
     },
   };

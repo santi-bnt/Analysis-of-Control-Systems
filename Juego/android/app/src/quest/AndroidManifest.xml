@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Merged into the main manifest only for the quest flavor. Runs as a Horizon OS 2D panel on Quest 3/3S. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:horizonos="http://schemas.horizonos/sdk">
+
+    <!-- Hybrid app: Flutter 2D panels and an immersive Spatial SDK board can coexist. -->
+    <horizonos:uses-horizonos-sdk
+        horizonos:minSdkVersion="69"
+        horizonos:targetSdkVersion="69" />
+
+    <!-- Quest has no touchscreen. Mark it optional so Android and the store allow installation. -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <!-- Immersive board supports head/hand tracking and passthrough. -->
+    <uses-feature android:name="android.hardware.vr.headtracking" android:required="true" />
+    <uses-feature android:name="oculus.software.handtracking" android:required="false" />
+    <uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
+    <!-- Body tracking supplies finger joints to detect open/closed hands for the cat paws. -->
+    <uses-feature android:name="com.oculus.software.body_tracking" android:required="false" />
+    <uses-permission android:name="com.oculus.permission.BODY_TRACKING" />
+    <uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="false" />
+    <uses-feature android:glEsVersion="0x00030001" />
+
+    <application>
+        <meta-data android:name="com.oculus.handtracking.version" android:value="V2.0" />
+        <meta-data android:name="com.oculus.vr.focusaware" android:value="true" />
+        <uses-native-library android:name="libossdk.oculus.so" android:required="true" />
+        <!-- Portrait game panel: connection, piece, status, and board. -->
+        <activity
+            android:name=".MainActivity"
+            android:resizeableActivity="true"
+            tools:node="merge">
+            <!-- Each hybrid-app activity declares whether it is a panel or immersive. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.oculus.intent.category.2D" />
+            </intent-filter>
+            <layout
+                android:defaultWidth="560dp"
+                android:defaultHeight="860dp"
+                android:minWidth="400dp"
+                android:minHeight="480dp"
+                android:gravity="center" />
+        </activity>
+
+                        <!-- Immersive tic-tac-toe board with passthrough. The background 2D panel retains the BLE connection. -->
+        <activity
+            android:name=".GameActivity3D"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.sesgaro.gato.quest.game3d"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.oculus.intent.category.VR" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.oculus.supportedDevices"
+            android:value="quest3|quest3s|questpro" />
+    </application>
+</manifest>

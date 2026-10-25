@@ -3,7 +3,7 @@ export const MAX_ANGULO = 180;
 export const MITAD_RIEL = 0.55;
 
 export function limitarAngulo(angulo: number): number {
-  if (!Number.isFinite(angulo)) throw new Error('El ángulo debe ser un número finito.');
+  if (!Number.isFinite(angulo)) throw new Error('Angle must be a finite number.');
   return Math.round(Math.max(MIN_ANGULO, Math.min(MAX_ANGULO, angulo)));
 }
 

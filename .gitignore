@@ -1,10 +1,4 @@
-# ==============================================================================
-# Gitignore - Analysis of Control Systems
-# ==============================================================================
-
-# ------------------------------------------------------------------------------
-# 1. Variables de entorno, contraseñas y credenciales sensibles
-# ------------------------------------------------------------------------------
+# Analysis of Control Systems ignore rules: environment variables, passwords, and sensitive credentials.
 **/.env
 **/.env.*
 !**/.env.example
@@ -17,7 +11,7 @@
 **/*secret*.yml
 
 # ------------------------------------------------------------------------------
-# 2. Certificados TLS / HTTPS y llaves privadas
+# 2. TLS / HTTPS certificates and private keys
 # ------------------------------------------------------------------------------
 **/.cert/
 **/*.pem
@@ -27,7 +21,7 @@
 **/*.p12
 
 # ------------------------------------------------------------------------------
-# 3. PlatformIO y binarios de microcontroladores (ESP32)
+# 3. PlatformIO and microcontroller binaries (ESP32)
 # ------------------------------------------------------------------------------
 **/.pio/
 **/.pioenvs/
@@ -36,9 +30,7 @@
 **/*.bin
 **/*.hex
 
-# ------------------------------------------------------------------------------
-# 4. Node.js, Frontend y artefactos de compilación
-# ------------------------------------------------------------------------------
+# Node.js/frontend dependencies and build artifacts.
 **/node_modules/
 **/.next/
 **/out/
@@ -51,7 +43,7 @@
 **/yarn-error.log*
 
 # ------------------------------------------------------------------------------
-# 5. Python (entornos virtuales, bytecode y tests)
+# 5. Python (virtual environments, bytecode, and tests)
 # ------------------------------------------------------------------------------
 **/.venv/
 **/venv/
@@ -62,15 +54,17 @@
 **/.pytest_cache/
 
 # ------------------------------------------------------------------------------
-# 6. MATLAB & Simulink (archivos de respaldo y autosave)
+# 6. MATLAB & Simulink (backups and autosave)
 # ------------------------------------------------------------------------------
 *.asv
 *.autosave
 *.mat.lock
+**/*.slxc
+**/*.slx.r*
+**/slprj/
+Matlab/tmp/
 
-# ------------------------------------------------------------------------------
-# 7. Archivos del sistema operativo y configuraciones locales de IDE
-# ------------------------------------------------------------------------------
+# Operating system files and local IDE configuration.
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db

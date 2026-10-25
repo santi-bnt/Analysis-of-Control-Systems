@@ -36,7 +36,7 @@ def validate_device_id(device_id: str) -> str:
 async def list_devices():
     """Retrieve the latest state and telemetry for all known devices."""
     devices = device_state_manager.list_devices()
-    # If no devices are tracked yet, ensure default 'motor-01' is listed so UI has a device ready
+    # List default motor-01 when no devices are tracked, so the UI has a device ready.
     if not devices:
         default_dev = device_state_manager.get_or_create("motor-01")
         return [default_dev]

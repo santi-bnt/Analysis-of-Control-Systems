@@ -1,6 +1,6 @@
 clear; clc;
 
-% Modelo para G(s) = 144 / (s^2 + 7.2 s + 144)
+% Model for G(s) = 144 / (s^2 + 7.2s + 144).
 rootDir = fileparts(mfilename('fullpath'));
 outDir = fullfile(rootDir, 'simulink', 'gs_response');
 if ~exist(outDir, 'dir')
@@ -25,12 +25,12 @@ set_param(modelName, ...
     'Solver', 'ode45', ...
     'MaxStep', '0.005');
 
-% Los coeficientes quedan guardados dentro del archivo SLX.
+% Coefficients are saved inside the SLX file.
 modelWorkspace = get_param(modelName, 'ModelWorkspace');
 assignin(modelWorkspace, 'Gs_num', 144);
 assignin(modelWorkspace, 'Gs_den', [1 7.2 144]);
 
-add_block('simulink/Sources/Step', [modelName '/Entrada escalon'], ...
+add_block('simulink/Sources/Step', [modelName '/Step input'], ...
     'Time', '0', ...
     'Before', '0', ...
     'After', '1', ...
@@ -43,32 +43,32 @@ add_block('simulink/Continuous/Transfer Fcn', [modelName '/Gs'], ...
 set_param([modelName '/Gs'], ...
     'AttributesFormatString', '144/(s^2 + 7.2s + 144)');
 
-add_block('simulink/Signal Routing/Mux', [modelName '/Mux entrada y salida'], ...
+add_block('simulink/Signal Routing/Mux', [modelName '/Input and output mux'], ...
     'Inputs', '2', ...
     'Position', [550 115 555 225]);
 
-add_block('simulink/Sinks/Scope', [modelName '/Scope respuesta'], ...
+add_block('simulink/Sinks/Scope', [modelName '/Response scope'], ...
     'Position', [670 145 730 195]);
 
-add_block('simulink/Sinks/To Workspace', [modelName '/Salida al workspace'], ...
+add_block('simulink/Sinks/To Workspace', [modelName '/Workspace output'], ...
     'VariableName', 'y_gs', ...
     'SaveFormat', 'Structure With Time', ...
     'Position', [485 285 625 315]);
 
-add_block('simulink/Sinks/Out1', [modelName '/Salida y(t)'], ...
+add_block('simulink/Sinks/Out1', [modelName '/Output y(t)'], ...
     'Position', [700 285 730 305]);
 
-add_line(modelName, 'Entrada escalon/1', 'Gs/1', 'autorouting', 'on');
-add_line(modelName, 'Entrada escalon/1', 'Mux entrada y salida/1', 'autorouting', 'on');
-add_line(modelName, 'Gs/1', 'Mux entrada y salida/2', 'autorouting', 'on');
-add_line(modelName, 'Mux entrada y salida/1', 'Scope respuesta/1', 'autorouting', 'on');
-add_line(modelName, 'Gs/1', 'Salida al workspace/1', 'autorouting', 'on');
-add_line(modelName, 'Gs/1', 'Salida y(t)/1', 'autorouting', 'on');
+add_line(modelName, 'Step input/1', 'Gs/1', 'autorouting', 'on');
+add_line(modelName, 'Step input/1', 'Input and output mux/1', 'autorouting', 'on');
+add_line(modelName, 'Gs/1', 'Input and output mux/2', 'autorouting', 'on');
+add_line(modelName, 'Input and output mux/1', 'Response scope/1', 'autorouting', 'on');
+add_line(modelName, 'Gs/1', 'Workspace output/1', 'autorouting', 'on');
+add_line(modelName, 'Gs/1', 'Output y(t)/1', 'autorouting', 'on');
 
 annotationText = sprintf(['G(s) = 144 / (s^2 + 7.2s + 144)\n' ...
-    'Entrada: escalon unitario   |   Tiempo: 5 s\n' ...
-    'El Scope compara la entrada r(t) con la salida y(t).']);
-add_block('built-in/Note', [modelName '/Descripcion'], ...
+    'Input: unit step   |   Time: 5 s\n' ...
+    'The scope compares input r(t) with output y(t).']);
+add_block('built-in/Note', [modelName '/Description'], ...
     'Position', [70 350 445 430], ...
     'Text', annotationText, ...
     'FontSize', '12');
@@ -78,7 +78,7 @@ save_system(modelName, modelFile);
 print(['-s' modelName], '-dpng', '-r160', ...
     fullfile(outDir, 'gs_step_response_model.png'));
 
-% Ejecuta una simulacion de comprobacion y crea una grafica de referencia.
+% Run a verification simulation and generate a reference plot.
 simOut = sim(modelName, 'ReturnWorkspaceOutputs', 'on');
 y = simOut.get('y_gs');
 
@@ -86,13 +86,13 @@ fig = figure('Visible', 'off', 'Color', 'white');
 plot(y.time, ones(size(y.time)), '--', 'LineWidth', 1.2); hold on;
 plot(y.time, y.signals.values, 'LineWidth', 1.8);
 grid on;
-xlabel('Tiempo (s)');
-ylabel('Amplitud');
-title('Respuesta de G(s) a un escalon unitario');
-legend('Entrada r(t)', 'Salida y(t)', 'Location', 'best');
+xlabel('Time (s)');
+ylabel('Amplitude');
+title('Unit-step response of G(s)');
+legend('Input r(t)', 'Output y(t)', 'Location', 'best');
 xlim([0 5]);
 exportgraphics(fig, fullfile(outDir, 'gs_step_response.png'), 'Resolution', 160);
 close(fig);
 
 close_system(modelName, 0);
-fprintf('Modelo creado: %s\n', modelFile);
+fprintf('Model created: %s\n', modelFile);

@@ -2,11 +2,7 @@ clc;
 clear;
 close all;
 
-%% Parametros
-
-% Mi matricula es A01646121
-% El ultimo digito es 1
-% Por lo tanto R1 = R2 = 1 + 10 = 11 ohms
+%% Parameters: student ID A01646121 ends in 1, so R1=R2=1+10=11 ohms.
 
 R1 = 11;
 R2 = 11;
@@ -17,21 +13,18 @@ C2 = 0.1;
 
 E = 10;
 
-%% Tiempo de simulacion
+%% Simulation time.
 
 tspan = [0 20];
 
-%% Condiciones iniciales
-% Inicialmente los capacitores estan descargados
+%% Initial conditions: both capacitors start discharged.
 
 VC1_0 = 0;
 VC2_0 = 0;
 
 y0 = [VC1_0 VC2_0];
 
-%% Modelo del circuito
-% y(1) = VC1
-% y(2) = VC2
+%% Circuit model: y(1)=VC1, y(2)=VC2.
 
 modelo = @(t,y) [
 
@@ -41,27 +34,27 @@ modelo = @(t,y) [
 
 ];
 
-%% Simulacion
+%% Simulation
 
 [t,y] = ode45(modelo, tspan, y0);
 
 VC1 = y(:,1);
 VC2 = y(:,2);
 
-%% Estado estable
+%% Steady state
 
 VC1_ss = E;
 VC2_ss = E;
 
-fprintf('Valores de estado estable:\n');
+fprintf('Steady-state values:\n');
 fprintf('VC1 = %.4f V\n', VC1_ss);
 fprintf('VC2 = %.4f V\n', VC2_ss);
 
-fprintf('\nValores al final de la simulacion:\n');
+fprintf('\nValues at the end of the simulation:\n');
 fprintf('VC1(20 s) = %.4f V\n', VC1(end));
 fprintf('VC2(20 s) = %.4f V\n', VC2(end));
 
-%% Grafica VC1
+%% Plot VC1
 
 figure;
 
@@ -76,7 +69,7 @@ xlabel('Time (s)');
 ylabel('V_{C1} (V)');
 title('V_{C1} vs Time');
 
-%% Grafica VC2
+%% Plot VC2
 
 figure;
 

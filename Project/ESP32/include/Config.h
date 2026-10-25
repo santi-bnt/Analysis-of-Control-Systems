@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-// Las credenciales y el certificado del broker van en Secrets.h.
+// Credentials and the broker certificate belong in Secrets.h.
 #if __has_include("Secrets.h")
 #include "Secrets.h"
 #endif
@@ -51,13 +51,13 @@ constexpr unsigned long STALE_COMMAND_TIMEOUT_MS = 5000;
 constexpr unsigned long WIFI_RETRY_MS = 5000;
 constexpr unsigned long MQTT_RETRY_MS = 5000;
 
-// Selecciona un solo controlador: deja su define activo y comenta los otros.
+// Enable exactly one controller and leave the other defines commented.
 #define CONTROL_MODE_P
 //#define CONTROL_MODE_PI
 //#define CONTROL_MODE_PID
 
 #if (defined(CONTROL_MODE_P) + defined(CONTROL_MODE_PI) + defined(CONTROL_MODE_PID)) != 1
-#error "Activa exactamente un modo: CONTROL_MODE_P, CONTROL_MODE_PI o CONTROL_MODE_PID"
+#error "Enable exactly one mode: CONTROL_MODE_P, CONTROL_MODE_PI, or CONTROL_MODE_PID"
 #endif
 
 // Gains copied from the supplied practice PID; validate them on the motor.
@@ -66,8 +66,8 @@ constexpr float KI = 21.0020f;
 constexpr float KD = 0.1834f;
 constexpr float PPR = 11.0f;
 constexpr float REDUCCION = 34.0f;
-// Se cuenta un flanco RISING de A, igual que en el código del motor.
-// Segundo ajuste: 180 grados indicados correspondían a unos 90 grados reales.
-constexpr float CPR = PPR * REDUCCION * 4.0f;  // 1496 pulsos por vuelta
+// Count A rising edges as in the motor implementation. Second scale adjustment: indicated 180
+// degrees corresponded to about 90 physical degrees.
+constexpr float CPR = PPR * REDUCCION * 4.0f;  // 1496 counts per revolution.
 constexpr float MIN_POSITION_DEG = -180.0f;
 constexpr float MAX_POSITION_DEG = 180.0f;
